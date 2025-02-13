@@ -246,8 +246,9 @@ typedef class Matrix {
 
         Matrix inverse() const {
             double det = this->determinant();
+            constexpr double EPS = 1e-9;
 
-            if (det == 0) {
+            if (std::abs(det) < EPS) {
                 throw std::runtime_error("Singular matrix");
             }
 
