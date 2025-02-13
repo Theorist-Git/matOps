@@ -80,16 +80,31 @@ typedef class Matrix {
             } 
 
             std::swap(this->nrows, this->ncols);
-            this->container = transposeContainer;
+
+            this->container = std::move(transposeContainer);
         }
 
         void showMatrix() {
+            std::cout << "[\n";  // Opening bracket for the entire matrix
+
             for (size_t i = 0; i < this->nrows; ++i) {
+                std::cout << "  [";
                 for (size_t j = 0; j < this->ncols; ++j) {
-                    std::cout << this->container[i][j] << " ";
+                    std::cout << this->container[i][j];  // Print element
+                    if (j < this->ncols - 1) {
+                        std::cout << ", ";  // Add comma between elements
+                    }
                 }
-                std::cout << "\n";
+                std::cout << "]";  // Closing bracket for each row
+                if (i < this->nrows - 1) {
+                    std::cout << ",\n";  // Add a comma between rows, except after the last row
+                }
+                else {
+                    std::cout << "\n";  // Just move to the next line after the last row
+                }
             }
+        
+            std::cout << "]\n";  // Closing bracket for the entire matrix
         }
 
         
