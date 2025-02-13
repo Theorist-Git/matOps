@@ -65,6 +65,17 @@ typedef class Matrix {
             this->container = container;
         }
 
+        Matrix(size_t rows, size_t cols, double initialValue) {
+            if (rows == 0 || cols == 0) {
+                throw std::invalid_argument("Matrix dimensions must be greater than 0.");
+            }
+
+            this->nrows = rows;
+            this->ncols = cols;
+
+            this->container = std::vector<std::vector<double>>(rows, std::vector<double>(cols, initialValue));
+        }
+
         Matrix operator+(const Matrix& other) const {
             if (this->nrows != other.nrows || this->ncols != other.ncols) {
                 throw std::invalid_argument("Matrix dims don't align");
@@ -293,26 +304,19 @@ typedef class Matrix {
             return inv;
         }
 
-        void showMatrix() const {
-            std::cout << "[\n";  
+        friend std::ostream& operator<<(std::ostream& os, const Matrix& m) {
+            os << "[\n";
 
-            for (size_t i = 0; i < this->nrows; ++i) {
-                std::cout << "  [";
-                for (size_t j = 0; j < this->ncols; ++j) {
-                    std::cout << this->container[i][j];  
-                    if (j < this->ncols - 1) {
-                        std::cout << ", ";  
-                    }
+            for (size_t i = 0; i < m.nrows; ++i) {
+                os << "  [";
+                for (size_t j = 0; j < m.ncols; ++j) {
+                    os << m.container[i][j];
+
+                    if (j < m.ncols - 1) os << ", ";
                 }
-                std::cout << "]";  
-                if (i < this->nrows - 1) {
-                    std::cout << ",\n";  
-                }
-                else {
-                    std::cout << "\n";  
-                }
+                os << "]" << (i < m.nrows - 1 ? ",\n" : "\n");
             }
-        
-            std::cout << "]\n";  
+            os << "]\n";
+            return os;
         }
 } mat;
