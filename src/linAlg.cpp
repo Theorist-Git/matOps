@@ -87,15 +87,15 @@ typedef class Matrix {
                 throw std::invalid_argument("Matrix dims don't align");
             }
 
-            Matrix addRes = *this; // addRes = A in A + B
+            Matrix subRes = *this; // subRes = A in A - B
 
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
-                    addRes.container[i][j] -= other.container[i][j];
+                    subRes.container[i][j] -= other.container[i][j];
                 }
             }
 
-            return addRes;
+            return subRes;
         }
 
         bool operator==(const Matrix& other) const {
@@ -139,12 +139,20 @@ typedef class Matrix {
             return Matrix(mulResContainer);
         }
 
-        double operator()(size_t row, size_t col) {
+        double operator()(size_t row, size_t col) const {
             if (row >= this->nrows || col >= this->ncols) {
                 throw std::out_of_range("Index out of bounds");
             }
 
             return this->container[row][col];
+        }
+
+        void set(size_t row, size_t col, double val) {
+            if (row >= this->nrows || col >= this->ncols) {
+                throw std::out_of_range("Index out of bounds");
+            }
+
+            this->container[row][col] = val;
         }
 
         void transpose() {
