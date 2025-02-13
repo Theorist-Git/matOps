@@ -44,7 +44,7 @@ typedef class Matrix {
         }
 
     public:
-        std::pair<size_t, size_t> shape;
+        std::pair<size_t, size_t> shape() const { return {nrows, ncols}; }
 
         Matrix(const std::vector<std::vector<double>>& container) {
             this->nrows = container.size();
@@ -63,7 +63,6 @@ typedef class Matrix {
             }
 
             this->container = container;
-            this->shape     = {nrows, ncols};
         }
 
         Matrix operator+(const Matrix& other) const {
