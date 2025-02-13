@@ -126,9 +126,15 @@ typedef class Matrix {
         }
 
         friend Matrix operator-(double scalar, const Matrix& other) {
-            Matrix negation = other * -1;
+            Matrix subRes = other;
 
-            return negation + scalar;
+            for (size_t i = 0; i < subRes.nrows; ++i) {
+                for (size_t j = 0; j < subRes.ncols; ++j) {
+                    subRes.container[i][j] = scalar - subRes.container[i][j];
+                }
+            }
+
+            return subRes;
         }
 
         bool operator==(const Matrix& other) const {
