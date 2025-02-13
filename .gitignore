@@ -1,0 +1,6 @@
+.vscode
+bin/
+src/simpleLinearRegression.cpp
+src/simpleLinearRegression
+test
+test.cpp
