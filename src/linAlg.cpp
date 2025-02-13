@@ -8,6 +8,41 @@ typedef class Matrix {
         size_t nrows;
         std::vector<std::vector<double>> container;
 
+        double _det(const std::vector<std::vector<double>> &matrix) const {
+
+            size_t n = matrix.size();
+            
+            // Base case: 1x1 matrix
+            if (n == 1) {
+                return matrix[0][0];
+            }
+            
+            // Base case: 2x2 matrix
+            if (n == 2) {
+                return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0];
+            }
+            
+            double det = 0.0;
+
+            for (int col = 0; col < n; col++) {
+                std::vector<std::vector<double>> minor;
+                for (int i = 1; i < n; i++) {
+                    std::vector<double> row;
+                    for (int j = 0; j < n; j++) {
+                        if (j == col)
+                            continue;
+                        row.push_back(matrix[i][j]);
+                    }
+                    minor.push_back(row);
+                }
+                
+                double sign = (col % 2 == 0) ? 1.0 : -1.0;
+                det += sign * matrix[0][col] * _det(minor);
+            }
+            
+            return det;
+        }
+
     public:
         std::pair<size_t, size_t> shape;
 
@@ -16,7 +51,7 @@ typedef class Matrix {
 
             if ( this->nrows == 0 ) {
                 this->ncols = 0;
-                std::cerr << "[Warning]: Matrix is empty!" << std::endl;
+                throw std::invalid_argument("Matrix is empty. Expected `const std::vector<std::vector<double>>& container`");
             } else {
                 this->ncols = container[0].size();
             }
@@ -81,7 +116,7 @@ typedef class Matrix {
 
                 return;
             }
-            
+
             std::vector<std::vector<double>> transposeContainer(this->ncols, std::vector<double>(this->nrows));
 
             for (size_t i = 0; i < this->nrows; ++i) {
@@ -93,6 +128,16 @@ typedef class Matrix {
             std::swap(this->nrows, this->ncols);
 
             this->container = std::move(transposeContainer);
+        }
+
+        double determinant() const {
+            if (this->nrows != this->ncols) {
+                throw std::invalid_argument("Det only for sq. matrices");
+            }
+
+            size_t n = this->nrows;
+            
+            return _det(this->container);
         }
 
         void showMatrix() {
