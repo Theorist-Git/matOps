@@ -81,6 +81,22 @@ typedef class Matrix {
             return addRes;
         }
 
+        Matrix operator+(double scalar) const {
+            Matrix addRes = *this;
+
+            for (size_t i = 0; i < this->nrows; ++i) {
+                for (size_t j = 0; j < this->ncols; ++j) {
+                    addRes.container[i][j] += scalar;
+                }
+            }
+
+            return addRes;
+        }
+
+        friend Matrix operator+(double scalar, const Matrix& other) {
+            return other + scalar;
+        }
+
         Matrix operator-(const Matrix& other) const {
             if (this->nrows != other.nrows || this->ncols != other.ncols) {
                 throw std::invalid_argument("Matrix dims don't align");
@@ -95,6 +111,24 @@ typedef class Matrix {
             }
 
             return subRes;
+        }
+
+        Matrix operator-(double scalar) const {
+            Matrix subRes = *this; // subRes = A in A - B
+
+            for (size_t i = 0; i < this->nrows; ++i) {
+                for (size_t j = 0; j < this->ncols; ++j) {
+                    subRes.container[i][j] -= scalar;
+                }
+            }
+
+            return subRes;
+        }
+
+        friend Matrix operator-(double scalar, const Matrix& other) {
+            Matrix negation = other * -1;
+
+            return negation + scalar;
         }
 
         bool operator==(const Matrix& other) const {
@@ -117,7 +151,6 @@ typedef class Matrix {
 
         Matrix operator*(const Matrix& other) const {
             if (this->ncols != other.nrows) {
-                std::cout << this->ncols << " " << other.nrows << std::endl;
                 throw std::invalid_argument("Incorrect dims: For matrix m x n and p x r, n must be equal to p.");
             }
 
@@ -136,6 +169,22 @@ typedef class Matrix {
             }
 
             return Matrix(mulResContainer);
+        }
+
+        Matrix operator*(double scalar) const {
+            Matrix mulRes = *this;
+
+            for (size_t i = 0; i < this->nrows; ++i) {
+                for (size_t j = 0; j < this->ncols; ++j) {
+                    mulRes.container[i][j] *= scalar;
+                }
+            }
+
+            return mulRes;
+        }
+
+        friend Matrix operator*(double scalar, const Matrix& other) {
+            return other * scalar;
         }
 
         double operator()(size_t row, size_t col) const {
@@ -189,7 +238,7 @@ typedef class Matrix {
             return _det(this->container);
         }
 
-        Matrix inverse() {
+        Matrix inverse() const {
             double det = this->determinant();
 
             if (det == 0) {
@@ -237,7 +286,7 @@ typedef class Matrix {
             return inv;
         }
 
-        void showMatrix() {
+        void showMatrix() const {
             std::cout << "[\n";  
 
             for (size_t i = 0; i < this->nrows; ++i) {
