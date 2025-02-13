@@ -71,6 +71,17 @@ typedef class Matrix {
         }
 
         void transpose() {
+
+            if (this->nrows == this->ncols) {
+                for (size_t i = 0; i < this->nrows; ++i) {
+                    for (size_t j = i + 1; j < this->ncols; ++j) {
+                        std::swap(this->container[i][j], this->container[j][i]);
+                    }
+                }
+
+                return;
+            }
+            
             std::vector<std::vector<double>> transposeContainer(this->ncols, std::vector<double>(this->nrows));
 
             for (size_t i = 0; i < this->nrows; ++i) {
@@ -85,34 +96,28 @@ typedef class Matrix {
         }
 
         void showMatrix() {
-            std::cout << "[\n";  // Opening bracket for the entire matrix
+            std::cout << "[\n";  
 
             for (size_t i = 0; i < this->nrows; ++i) {
                 std::cout << "  [";
                 for (size_t j = 0; j < this->ncols; ++j) {
-                    std::cout << this->container[i][j];  // Print element
+                    std::cout << this->container[i][j];  
                     if (j < this->ncols - 1) {
-                        std::cout << ", ";  // Add comma between elements
+                        std::cout << ", ";  
                     }
                 }
-                std::cout << "]";  // Closing bracket for each row
+                std::cout << "]";  
                 if (i < this->nrows - 1) {
-                    std::cout << ",\n";  // Add a comma between rows, except after the last row
+                    std::cout << ",\n";  
                 }
                 else {
-                    std::cout << "\n";  // Just move to the next line after the last row
+                    std::cout << "\n";  
                 }
             }
         
-            std::cout << "]\n";  // Closing bracket for the entire matrix
+            std::cout << "]\n";  
         }
 
         
 
 } mat;
-
-// int main() {
-    
-
-//     return 0;
-// }
