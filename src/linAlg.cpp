@@ -2,7 +2,7 @@
 #include <vector>
 #pragma once
 
-typedef class Matrix {
+class Matrix {
     private:
         size_t ncols;
         size_t nrows;
@@ -395,4 +395,4 @@ typedef class Matrix {
             os << "]\n";
             return os;
         }
-} mat;
+};
