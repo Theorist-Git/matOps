@@ -341,6 +341,45 @@ typedef class Matrix {
             return hstackRes;
         }
 
+        Matrix insertCol(std::vector<double> col, size_t idx) const {
+            if (this->nrows != col.size()) {
+                throw std::invalid_argument("Ill formed column. Should be of same size as the rest of the matrix");
+            }
+
+            if (idx > this->ncols) {
+                throw std::invalid_argument("Column index out of range");
+            }
+
+            Matrix vstackRes = *this;
+
+            size_t colIter = 0;
+
+            for (auto& row : vstackRes.container) {
+                row.insert(row.begin() + idx, col[colIter]);
+                colIter++;
+            }
+
+            vstackRes.ncols += 1;
+
+            return vstackRes;
+        }
+
+        Matrix insertCol(double colVal, size_t idx) const {
+            if (idx > this->ncols) {
+                throw std::invalid_argument("Column index out of range");
+            }
+
+            Matrix vstackRes = *this;
+
+            for (auto& row : vstackRes.container) {
+                row.insert(row.begin() + idx, colVal);
+            }
+
+            vstackRes.ncols += 1;
+
+            return vstackRes;
+        }
+
         friend std::ostream& operator<<(std::ostream& os, const Matrix& m) {
             os << "[\n";
 
