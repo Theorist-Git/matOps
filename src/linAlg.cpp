@@ -204,6 +204,15 @@ typedef class Matrix {
             return other * scalar;
         }
 
+        Matrix operator/(double scalar) const {
+            if (scalar == 0) {
+                throw std::runtime_error("Division by Zero");
+            }
+
+            Matrix devRes = *this;
+            return devRes * (1 / scalar);
+        }
+
         double operator()(size_t row, size_t col) const {
             if (row >= this->nrows || col >= this->ncols) {
                 throw std::out_of_range("Index out of bounds");
@@ -302,6 +311,34 @@ typedef class Matrix {
             }
 
             return inv;
+        }
+
+        Matrix insertRow(std::vector<double> row, size_t idx) const {
+            if ( this->ncols != row.size() ) {
+                throw std::invalid_argument("Ill formed row. Should be of same size as the rest of the matrix");
+            }
+
+            if (idx > this->nrows) {
+                throw std::invalid_argument("Row index out of range");
+            }
+
+            Matrix hstackRes = *this;
+            hstackRes.container.insert(hstackRes.container.begin() + idx, row);
+            hstackRes.nrows += 1;
+
+            return hstackRes;
+        }
+
+        Matrix insertRow(double rowVal, size_t idx) const {
+            if (idx > this->nrows) {
+                throw std::invalid_argument("Row index out of range");
+            }
+
+            Matrix hstackRes = *this;
+            hstackRes.container.insert(hstackRes.container.begin() + idx, std::vector<double>(this->ncols, rowVal));
+            hstackRes.nrows += 1;
+
+            return hstackRes;
         }
 
         friend std::ostream& operator<<(std::ostream& os, const Matrix& m) {
