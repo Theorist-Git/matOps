@@ -1,7 +1,7 @@
 .vscode
 bin/
-src/simpleLinearRegression.cpp
-src/simpleLinearRegression
+simpleLinearRegression.cpp
+simpleLinearRegression
 test
 test.cpp
 html/
