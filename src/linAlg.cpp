@@ -397,8 +397,6 @@ class Matrix {
             if (this->nrows != this->ncols) {
                 throw std::invalid_argument("Det only for sq. matrices");
             }
-
-            size_t n = this->nrows;
             
             return _det(this->container);
         }
@@ -642,11 +640,11 @@ class Matrix {
             size_t colEnd   = colSlice.second;
 
             if (
-                rowStart < 0 || rowStart >= this->nrows ||  // Check if rowStart is out of bounds
-                rowEnd < 0 || rowEnd >= this->nrows ||      // Check if rowEnd is out of bounds
+                rowStart >= this->nrows ||  // Check if rowStart is out of bounds
+                rowEnd >= this->nrows ||      // Check if rowEnd is out of bounds
                 rowStart > rowEnd ||                      // Ensure rowStart comes before rowEnd
-                colStart < 0 || colStart >= this->ncols || // Check if colStart is out of bounds
-                colEnd < 0 || colEnd >= this->ncols ||      // Check if colEnd is out of bounds
+                colStart >= this->ncols || // Check if colStart is out of bounds
+                colEnd >= this->ncols ||      // Check if colEnd is out of bounds
                 colStart > colEnd                         // Ensure colStart comes before colEnd
             ) {
                 throw std::out_of_range("Slice indices are out of bounds or invalid.");
