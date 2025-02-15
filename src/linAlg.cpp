@@ -448,7 +448,7 @@ class Matrix {
             }
 
             Matrix inv(cof);
-            inv.transpose();
+            inv = inv.transpose();
 
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
