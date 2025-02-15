@@ -559,6 +559,67 @@ class Matrix {
         }
 
         /**
+         * @brief Horizontally concatenates two matrices.
+         *
+         * This function creates and returns a new Matrix by appending the columns of the given matrix
+         * to the right of the calling matrix. Both matrices must have the same number of rows.
+         *
+         * @param other The Matrix whose columns will be appended to the calling matrix.
+         * @return A new Matrix representing the horizontal concatenation of the two matrices.
+         * @throws std::invalid_argument if the two matrices do not have the same number of rows.
+         *
+         * @note This implementation reserves the necessary capacity before inserting to minimize reallocations.
+         */
+        Matrix hStack(const Matrix& other) const {
+            if (this->nrows != other.nrows) {
+                throw std::invalid_argument("Horizontal stack requires alignment of no. of rows");
+            }
+
+            size_t rowIter = 0;
+            Matrix hStackRes = *this;
+
+            for (auto& rows: other.container) {
+                for (double val: rows) {
+                    hStackRes.container[rowIter].push_back(val);
+                }
+                rowIter++;
+            }
+
+            hStackRes.ncols += other.ncols;
+
+            return hStackRes;
+        }
+
+        /**
+         * @brief Vertically concatenates two matrices.
+         *
+         * This function creates and returns a new Matrix by appending the rows of the given matrix
+         * below the rows of the calling matrix. Both matrices must have the same number of columns.
+         *
+         * @param other The Matrix whose rows will be appended to the calling matrix.
+         * @return A new Matrix representing the vertical concatenation of the two matrices.
+         * @throws std::invalid_argument if the two matrices do not have the same number of columns.
+         *
+         * @note The function appends each row of the second matrix to the container of the first,
+         *       and updates the total row count accordingly.
+         */
+        Matrix vStack(const Matrix& other) const {
+            if (this->ncols != other.ncols) {
+                throw std::invalid_argument("Vertical stack requires alignment of no. of cols");
+            }
+
+            Matrix vStackRes = *this;
+
+            for (auto& row: other.container) {
+                vStackRes.container.push_back(row);
+            }
+
+            vStackRes.nrows += other.nrows;
+
+            return vStackRes;
+        }
+
+        /**
          * @brief Extracts a submatrix from the current Matrix.
          *
          * Given a pair of row indices and a pair of column indices, this function creates
