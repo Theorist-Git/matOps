@@ -360,30 +360,12 @@ class Matrix {
         }
 
         /**
-         * @brief Sets the value of an element in the matrix.
-         *
-         * @param row The row index.
-         * @param col The column index.
-         * @param val The value to set.
-         * @throws std::out_of_range if the indices are out of bounds.
-         */
-        void set(size_t row, size_t col, double val) {
-            if (row >= this->nrows || col >= this->ncols) {
-                throw std::out_of_range("Index out of bounds");
-            }
-
-            this->container[row][col] = val;
-        }
-
-        /**
-         * @brief Transposes the matrix in-place.
-         *
-         * @note This operation swaps the rows and columns of the matrix, thereby changing its shape. This is inplace, changes the calling object.
-         *
+         * @brief Transposes the matrix.
+         * @return A new matrix of dim (mxn) for a calling matrix of dim (nxm)
          * Example:
          * @code
          * Matrix A({{1, 2}, {3, 4}});
-         * A.transpose();
+         * A = A.transpose();
          * // A becomes:
          * // [
          * //   [1, 3],
@@ -391,17 +373,7 @@ class Matrix {
          * // ]
          * @endcode
          */
-        void transpose() {
-
-            if (this->nrows == this->ncols) {
-                for (size_t i = 0; i < this->nrows; ++i) {
-                    for (size_t j = i + 1; j < this->ncols; ++j) {
-                        std::swap(this->container[i][j], this->container[j][i]);
-                    }
-                }
-
-                return;
-            }
+        Matrix transpose() const {
 
             std::vector<std::vector<double>> transposeContainer(this->ncols, std::vector<double>(this->nrows));
 
@@ -411,9 +383,7 @@ class Matrix {
                 }
             } 
 
-            std::swap(this->nrows, this->ncols);
-
-            this->container = std::move(transposeContainer);
+            return Matrix(transposeContainer);
         }
 
         /**
