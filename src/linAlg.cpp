@@ -2,12 +2,36 @@
 #include <vector>
 #pragma once
 
+/**
+ * @class Matrix
+ * @brief A simple linear algebra library for matrix operations.
+ *
+ * This class provides basic matrix operations such as addition, subtraction,
+ * multiplication, transposition, determinant calculation, inversion, and row/column insertion.
+ *
+ * Example Usage:
+ * @code
+ * Matrix A({{1, 2}, {3, 4}});
+ * Matrix B({{5, 6}, {7, 8}});
+ * Matrix C = A + B; // Matrix addition
+ * Matrix D = A * B; // Matrix multiplication
+ * double detA = A.determinant(); // Determinant calculation
+ * @endcode
+ */
 class Matrix {
     private:
-        size_t ncols;
-        size_t nrows;
-        std::vector<std::vector<double>> container;
+        size_t ncols; ///< Number of columns in the matrix.
+        size_t nrows; ///< Number of rows in the matrix.
 
+        std::vector<std::vector<double>> container; ///< 2D vector holding matrix elements.
+
+        /**
+         * @brief Recursively computes the determinant of a given square matrix.
+         *
+         * @param matrix A 2D vector representing a square matrix.
+         * @return The determinant as a double.
+         * @note This is a private helper function used by the public determinant() method.
+         */
         double _det(const std::vector<std::vector<double>> &matrix) const {
 
             size_t n = matrix.size();
@@ -44,8 +68,21 @@ class Matrix {
         }
 
     public:
+        /**
+         * @brief Returns the dimensions of the matrix.
+         *
+         * @return A std::pair where first is the number of rows and second is the number of columns.
+         */
         std::pair<size_t, size_t> shape() const { return {nrows, ncols}; }
 
+
+        /**
+         * @brief Constructs a Matrix from a given 2D vector container.
+         *
+         * @param container A 2D vector of doubles representing the matrix.
+         * @throws std::invalid_argument if the container is empty or row sizes are inconsistent.
+         * @note The shape is determined by the size of the container.
+         */
         Matrix(const std::vector<std::vector<double>>& container) {
             this->nrows = container.size();
 
@@ -65,6 +102,15 @@ class Matrix {
             this->container = container;
         }
 
+        /**
+         * @brief Constructs a Matrix with specified dimensions and an initial value.
+         *
+         * @param rows Number of rows.
+         * @param cols Number of columns.
+         * @param initialValue The value to initialize each element.
+         * @throws std::invalid_argument if rows or cols are 0.
+         * @note The shape is (rows x cols).
+         */
         Matrix(size_t rows, size_t cols, double initialValue) {
             if (rows == 0 || cols == 0) {
                 throw std::invalid_argument("Matrix dimensions must be greater than 0.");
@@ -76,6 +122,14 @@ class Matrix {
             this->container = std::vector<std::vector<double>>(rows, std::vector<double>(cols, initialValue));
         }
 
+        /**
+         * @brief Adds two matrices element-wise.
+         *
+         * @param other The Matrix to add.
+         * @return A new Matrix representing the element-wise sum.
+         * @throws std::invalid_argument if the dimensions of the two matrices do not match.
+         * @note The shape remains unchanged.
+         */
         Matrix operator+(const Matrix& other) const {
             if (this->nrows != other.nrows || this->ncols != other.ncols) {
                 throw std::invalid_argument("Matrix dims don't align");
@@ -92,6 +146,13 @@ class Matrix {
             return addRes;
         }
 
+        /**
+         * @brief Adds a scalar value to each element of the matrix. (MATRIX + K)
+         *
+         * @param scalar A double value to add.
+         * @return A new Matrix with the scalar added to each element.
+         * @note The shape remains unchanged.
+         */
         Matrix operator+(double scalar) const {
             Matrix addRes = *this;
 
@@ -104,10 +165,26 @@ class Matrix {
             return addRes;
         }
 
+        /**
+         * @brief Adds a scalar to each element of a matrix. (K + MATRIX)
+         *
+         * @param scalar The scalar value.
+         * @param other The Matrix to add the scalar to.
+         * @return A new Matrix with the result.
+         * @note The shape remains unchanged.
+         */
         friend Matrix operator+(double scalar, const Matrix& other) {
             return other + scalar;
         }
 
+        /**
+         * @brief Subtracts one matrix from another element-wise.
+         *
+         * @param other The Matrix to subtract.
+         * @return A new Matrix representing the element-wise difference.
+         * @throws std::invalid_argument if the dimensions of the two matrices do not match.
+         * @note The shape remains unchanged.
+         */
         Matrix operator-(const Matrix& other) const {
             if (this->nrows != other.nrows || this->ncols != other.ncols) {
                 throw std::invalid_argument("Matrix dims don't align");
@@ -124,6 +201,13 @@ class Matrix {
             return subRes;
         }
 
+        /**
+         * @brief Subtracts a scalar from each element of the matrix. (MATRIX - K)
+         *
+         * @param scalar The scalar value to subtract.
+         * @return A new Matrix with each element reduced by the scalar.
+         * @note The shape remains unchanged.
+         */
         Matrix operator-(double scalar) const {
             Matrix subRes = *this; // subRes = A in A - B
 
@@ -135,7 +219,15 @@ class Matrix {
 
             return subRes;
         }
-
+        
+        /**
+         * @brief Subtracts each element of the matrix from a scalar. (K - MATRIX)
+         *
+         * @param scalar The scalar value.
+         * @param other The Matrix whose elements are subtracted from the scalar.
+         * @return A new Matrix with the result.
+         * @note The shape remains unchanged.
+         */
         friend Matrix operator-(double scalar, const Matrix& other) {
             Matrix subRes = other;
 
@@ -148,6 +240,12 @@ class Matrix {
             return subRes;
         }
 
+        /**
+         * @brief Compares two matrices for equality.
+         *
+         * @param other The Matrix to compare with.
+         * @return True if the matrices are equal (within a tolerance), false otherwise.
+         */
         bool operator==(const Matrix& other) const {
             if (this->nrows != other.nrows || this->ncols != other.ncols) {
                 return false;
@@ -166,6 +264,15 @@ class Matrix {
             return true;
         }
 
+        /**
+         * @brief Multiplies two matrices.
+         *
+         * @param other The Matrix to multiply with.
+         * @return A new Matrix resulting from matrix multiplication.
+         * @throws std::invalid_argument if the number of columns of the first matrix
+         *         does not match the number of rows of the second.
+         * @note The shape of the result is (nrows of first, ncols of second).
+         */
         Matrix operator*(const Matrix& other) const {
             if (this->ncols != other.nrows) {
                 throw std::invalid_argument("Incorrect dims: For matrix m x n and p x r, n must be equal to p.");
@@ -188,6 +295,13 @@ class Matrix {
             return Matrix(mulResContainer);
         }
 
+        /**
+         * @brief Multiplies each element of the matrix by a scalar. (MATRIX * K)
+         *
+         * @param scalar The scalar value.
+         * @return A new Matrix with each element multiplied by the scalar.
+         * @note The shape remains unchanged.
+         */
         Matrix operator*(double scalar) const {
             Matrix mulRes = *this;
 
@@ -200,10 +314,26 @@ class Matrix {
             return mulRes;
         }
 
+        /**
+         * @brief Multiplies a scalar by a matrix. (K * MATRIX)
+         *
+         * @param scalar The scalar value.
+         * @param other The Matrix to multiply.
+         * @return A new Matrix with each element multiplied by the scalar.
+         * @note The shape remains unchanged.
+         */
         friend Matrix operator*(double scalar, const Matrix& other) {
             return other * scalar;
         }
 
+        /**
+         * @brief Divides each element of the matrix by a scalar.
+         *
+         * @param scalar The scalar value.
+         * @return A new Matrix with each element divided by the scalar.
+         * @throws std::runtime_error if scalar is zero.
+         * @note The shape remains unchanged.
+         */
         Matrix operator/(double scalar) const {
             if (scalar == 0) {
                 throw std::runtime_error("Division by Zero");
@@ -213,6 +343,14 @@ class Matrix {
             return devRes * (1 / scalar);
         }
 
+        /**
+         * @brief Accesses an element of the matrix at a specified row and column.
+         *
+         * @param row The row index.
+         * @param col The column index.
+         * @return The value at the specified position.
+         * @throws std::out_of_range if the indices are out of bounds.
+         */
         double operator()(size_t row, size_t col) const {
             if (row >= this->nrows || col >= this->ncols) {
                 throw std::out_of_range("Index out of bounds");
@@ -221,6 +359,14 @@ class Matrix {
             return this->container[row][col];
         }
 
+        /**
+         * @brief Sets the value of an element in the matrix.
+         *
+         * @param row The row index.
+         * @param col The column index.
+         * @param val The value to set.
+         * @throws std::out_of_range if the indices are out of bounds.
+         */
         void set(size_t row, size_t col, double val) {
             if (row >= this->nrows || col >= this->ncols) {
                 throw std::out_of_range("Index out of bounds");
@@ -229,6 +375,22 @@ class Matrix {
             this->container[row][col] = val;
         }
 
+        /**
+         * @brief Transposes the matrix in-place.
+         *
+         * @note This operation swaps the rows and columns of the matrix, thereby changing its shape. This is inplace, changes the calling object.
+         *
+         * Example:
+         * @code
+         * Matrix A({{1, 2}, {3, 4}});
+         * A.transpose();
+         * // A becomes:
+         * // [
+         * //   [1, 3],
+         * //   [2, 4]
+         * // ]
+         * @endcode
+         */
         void transpose() {
 
             if (this->nrows == this->ncols) {
@@ -254,6 +416,13 @@ class Matrix {
             this->container = std::move(transposeContainer);
         }
 
+        /**
+         * @brief Computes the determinant of the matrix.
+         *
+         * @return The determinant as a double.
+         * @throws std::invalid_argument if the matrix is not square.
+         * @note The shape of the matrix remains unchanged.
+         */
         double determinant() const {
             if (this->nrows != this->ncols) {
                 throw std::invalid_argument("Det only for sq. matrices");
@@ -264,6 +433,13 @@ class Matrix {
             return _det(this->container);
         }
 
+        /**
+         * @brief Computes the inverse of the matrix.
+         *
+         * @return A new Matrix representing the inverse.
+         * @throws std::runtime_error if the matrix is singular (non-invertible).
+         * @note The shape remains unchanged.
+         */
         Matrix inverse() const {
             double det = this->determinant();
             constexpr double EPS = 1e-9;
@@ -313,6 +489,14 @@ class Matrix {
             return inv;
         }
 
+        /**
+         * @brief Inserts a new row into the matrix.
+         *
+         * @param row A vector representing the new row.
+         * @param idx The index at which to insert the row.
+         * @return A new Matrix with the row inserted.
+         * @throws std::invalid_argument if the row size is inconsistent or if idx is out of range.
+         */
         Matrix insertRow(std::vector<double> row, size_t idx) const {
             if ( this->ncols != row.size() ) {
                 throw std::invalid_argument("Ill formed row. Should be of same size as the rest of the matrix");
@@ -329,6 +513,14 @@ class Matrix {
             return hstackRes;
         }
 
+        /**
+         * @brief Inserts a new row filled with a constant value into the matrix.
+         *
+         * @param rowVal The constant value to fill the new row.
+         * @param idx The index at which to insert the row.
+         * @return A new Matrix with the row inserted.
+         * @throws std::invalid_argument if idx is out of range.
+         */
         Matrix insertRow(double rowVal, size_t idx) const {
             if (idx > this->nrows) {
                 throw std::invalid_argument("Row index out of range");
@@ -341,6 +533,14 @@ class Matrix {
             return hstackRes;
         }
 
+        /**
+         * @brief Inserts a new column into the matrix.
+         *
+         * @param col A vector representing the new column.
+         * @param idx The index at which to insert the column.
+         * @return A new Matrix with the column inserted.
+         * @throws std::invalid_argument if the column size is inconsistent or if idx is out of range.
+         */
         Matrix insertCol(std::vector<double> col, size_t idx) const {
             if (this->nrows != col.size()) {
                 throw std::invalid_argument("Ill formed column. Should be of same size as the rest of the matrix");
@@ -364,6 +564,14 @@ class Matrix {
             return vstackRes;
         }
 
+        /**
+         * @brief Inserts a new column filled with a constant value into the matrix.
+         *
+         * @param colVal The constant value to fill the new column.
+         * @param idx The index at which to insert the column.
+         * @return A new Matrix with the column inserted.
+         * @throws std::invalid_argument if idx is out of range.
+         */
         Matrix insertCol(double colVal, size_t idx) const {
             if (idx > this->ncols) {
                 throw std::invalid_argument("Column index out of range");
@@ -380,6 +588,13 @@ class Matrix {
             return vstackRes;
         }
 
+        /**
+         * @brief Outputs the matrix to an output stream.
+         *
+         * @param os The output stream.
+         * @param m The Matrix to output.
+         * @return A reference to the output stream.
+         */
         friend std::ostream& operator<<(std::ostream& os, const Matrix& m) {
             os << "[\n";
 
