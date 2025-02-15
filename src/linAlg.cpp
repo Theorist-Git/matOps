@@ -348,10 +348,10 @@ class Matrix {
          *
          * @param row The row index.
          * @param col The column index.
-         * @return The value at the specified position.
+         * @return Reference to the value at the specified position. (modifiable)
          * @throws std::out_of_range if the indices are out of bounds.
          */
-        double operator()(size_t row, size_t col) const {
+        double& operator()(size_t row, size_t col) {
             if (row >= this->nrows || col >= this->ncols) {
                 throw std::out_of_range("Index out of bounds");
             }
