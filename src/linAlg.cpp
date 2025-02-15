@@ -589,6 +589,60 @@ class Matrix {
         }
 
         /**
+         * @brief Extracts a submatrix from the current Matrix.
+         *
+         * Given a pair of row indices and a pair of column indices, this function creates
+         * and returns a new Matrix containing the submatrix defined by the specified ranges.
+         * Both row and column ranges are inclusive, meaning that the elements at both the start
+         * and end indices are included in the result.
+         *
+         * @param rowSlice A std::pair<size_t, size_t> representing the start and end row indices (inclusive).
+         * @param colSlice A std::pair<size_t, size_t> representing the start and end column indices (inclusive).
+         * @return A new Matrix object containing the extracted submatrix.
+         * @throws std::out_of_range If any indices are out of bounds or if the slice ranges are invalid.
+         *
+         * @note Indices are zero-based (i.e., valid indices range from 0 to size() - 1).
+         */
+        Matrix extractMatrix(std::pair<size_t, size_t> rowSlice, std::pair<size_t, size_t> colSlice) const {
+            size_t rowStart = rowSlice.first;
+            size_t rowEnd   = rowSlice.second;
+
+            size_t colStart = colSlice.first;
+            size_t colEnd   = colSlice.second;
+
+            if (
+                rowStart < 0 || rowStart >= this->nrows ||  // Check if rowStart is out of bounds
+                rowEnd < 0 || rowEnd >= this->nrows ||      // Check if rowEnd is out of bounds
+                rowStart > rowEnd ||                      // Ensure rowStart comes before rowEnd
+                colStart < 0 || colStart >= this->ncols || // Check if colStart is out of bounds
+                colEnd < 0 || colEnd >= this->ncols ||      // Check if colEnd is out of bounds
+                colStart > colEnd                         // Ensure colStart comes before colEnd
+            ) {
+                throw std::out_of_range("Slice indices are out of bounds or invalid.");
+            }
+
+            std::vector<std::vector<double>> slice(rowEnd - rowStart + 1); 
+            /*
+            slice = something like this
+            {
+                {},
+                {},
+                ...
+            }
+            */
+            size_t sliceRowIndex = 0;
+
+            for (size_t i = rowStart; i <= rowEnd; ++i) {
+                for (size_t j = colStart; j <= colEnd; ++j) {
+                    slice[sliceRowIndex].push_back(this->container[i][j]);
+                }
+                sliceRowIndex++;
+            }
+
+            return Matrix(slice);
+        }
+
+        /**
          * @brief Outputs the matrix to an output stream.
          *
          * @param os The output stream.
