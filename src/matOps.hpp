@@ -695,7 +695,7 @@ class Matrix {
         }
 };
 
-std::ostream& operator<<(std::ostream& os, const std::pair<size_t, size_t>& shape) {
+inline std::ostream& operator<<(std::ostream& os, const std::pair<size_t, size_t>& shape) {
     os << "(" << shape.first << ", " << shape.second << ")";
 
     return os;
