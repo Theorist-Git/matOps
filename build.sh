@@ -4,7 +4,7 @@ set -xe
 
 # Compiler and flags
 CXX=g++
-CXXFLAGS="-std=c++11 -Wall -Wextra -Werror -pedantic -O2"
+CXXFLAGS="-std=c++11 -Wall -Wextra -Werror -pedantic -O3"
 
 # Output executable
 OUT="bin/testMatrix"
@@ -14,7 +14,7 @@ mkdir -p bin
 
 echo "Compiling testMatrix.cpp -> $OUT"
 # Compile testMatrix.cpp to an object file
-$CXX $CXXFLAGS -c src/testMatrix.cpp -o bin/testMatrix.o
+$CXX $CXXFLAGS -c test/testMatrix.cpp -o bin/testMatrix.o
 
 # Link the object file(s) into an executable
 $CXX bin/testMatrix.o -o $OUT

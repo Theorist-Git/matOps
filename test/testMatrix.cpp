@@ -5,7 +5,7 @@
 
  #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
  #include "doctest.h"
- #include "matOps.hpp" // This brings in the Matrix class
+ #include "../src/matOps.hpp" // This brings in the Matrix class
  
  #include <vector>
  #include <stdexcept>

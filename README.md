@@ -33,3 +33,9 @@ Contributor names and contact info
 
 * Mayank vats : [Theorist-git](https://github.com/Theorist-Git)
   * Email: <dev-theorist.e5xna@simplelogin.com>
+
+## License
+
+This project is licensed under the [MIT](https://choosealicense.com/licenses/mit/#) License
+
+Copyright (C) 2025 Mayank Vats
