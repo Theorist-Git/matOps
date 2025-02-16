@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -xe
+
 # Compiler and flags
 CXX=g++
 CXXFLAGS="-std=c++11 -Wall -Wextra -Werror -pedantic -O2"
