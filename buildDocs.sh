@@ -18,6 +18,6 @@ pdflatex refman.tex
 pdflatex refman.tex
 pdflatex refman.tex
 
-cp refman.pdf ..
-cd ..
+cp refman.pdf ../assets
+cd ../assets
 mv refman.pdf documentation.pdf
