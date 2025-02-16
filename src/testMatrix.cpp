@@ -271,3 +271,99 @@ TEST_CASE("Matrix Submatrix Extraction") {
         CHECK_THROWS_AS(m.extractMatrix({0, 1}, {2, 1}), std::out_of_range);
     }
 }
+
+TEST_CASE("Equality Tolerance Test") {
+    std::vector<std::vector<double>> a = { {1.0000000001, 2}, {3, 4} };
+    std::vector<std::vector<double>> b = { {1, 2}, {3, 4} };
+    Matrix m1(a);
+    Matrix m2(b);
+    // The difference is within EPS (1e-9) so they should be equal.
+    CHECK(m1 == m2);
+}
+
+TEST_CASE("Copy Constructor and Assignment Operator") {
+    std::vector<std::vector<double>> a = { {1, 2}, {3, 4} };
+    Matrix original(a);
+    Matrix copy1 = original;   // Uses copy constructor
+    Matrix copy2(a);           // Another copy
+    original(0, 0) = 99;       // Modify original
+
+    // The copies should remain unchanged.
+    CHECK(copy1(0, 0) == 1);
+    CHECK(copy2(0, 0) == 1);
+
+    // Test self-assignment (should not alter the matrix)
+    original = original;
+    CHECK(original(0, 0) == 99);
+}
+
+TEST_CASE("3x3 Matrix Inversion and Identity Check") {
+    std::vector<std::vector<double>> a = { {4, 7, 2},
+                                             {3, 6, 1},
+                                             {2, 5, 1} };
+    Matrix m(a);
+    Matrix inv = m.inverse();
+    Matrix prod = m * inv;
+
+    // Construct a 3x3 identity matrix
+    std::vector<std::vector<double>> identity = { {1, 0, 0},
+                                                  {0, 1, 0},
+                                                  {0, 0, 1} };
+    Matrix id(identity);
+
+    // Allow for some numerical tolerance in the product.
+    CHECK(prod == id);
+}
+
+TEST_CASE("Single Row and Single Column Submatrix Extraction") {
+    std::vector<std::vector<double>> a = { {10, 20, 30},
+                                             {40, 50, 60},
+                                             {70, 80, 90} };
+    Matrix m(a);
+    
+    // Extract the second row as a 1x3 matrix
+    Matrix rowExtract = m.extractMatrix({1, 1}, {0, 2});
+    std::vector<std::vector<double>> expectedRow = { {40, 50, 60} };
+    Matrix expectedRowMat(expectedRow);
+    CHECK(rowExtract == expectedRowMat);
+    
+    // Extract the third column as a 3x1 matrix
+    Matrix colExtract = m.extractMatrix({0, 2}, {2, 2});
+    std::vector<std::vector<double>> expectedCol = { {30}, {60}, {90} };
+    Matrix expectedColMat(expectedCol);
+    CHECK(colExtract == expectedColMat);
+}
+
+TEST_CASE("Chained Mixed Operations") {
+    std::vector<std::vector<double>> a = { {2, 4}, {6, 8} };
+    std::vector<std::vector<double>> b = { {1, 1}, {1, 1} };
+    Matrix m1(a), m2(b);
+    
+    // Example chain: ((m1 + m2) * 2) - 3 and then add 5
+    Matrix result = (((m1 + m2) * 2) - 3) + 5;
+    
+    // Calculate expected result manually:
+    // m1 + m2 = { {3, 5}, {7, 9} }
+    // *2        = { {6, 10}, {14, 18} }
+    // -3        = { {3, 7}, {11, 15} }
+    // +5        = { {8, 12}, {16, 20} }
+    std::vector<std::vector<double>> expected = { {8, 12}, {16, 20} };
+    Matrix expectedMat(expected);
+    
+    CHECK(result == expectedMat);
+}
+
+TEST_CASE("Zero Matrix Determinant") {
+    std::vector<std::vector<double>> zeroMatrix = { {0, 0}, {0, 0} };
+    Matrix m(zeroMatrix);
+    CHECK(m.determinant() == 0);
+}
+
+TEST_CASE("Division by Floating Point Scalar") {
+    std::vector<std::vector<double>> a = { {2.5, 5.0}, {7.5, 10.0} };
+    Matrix m(a);
+    Matrix result = m / 2.5;
+    std::vector<std::vector<double>> expected = { {1.0, 2.0}, {3.0, 4.0} };
+    Matrix expectedMat(expected);
+    CHECK(result == expectedMat);
+}
