@@ -507,3 +507,33 @@
      // -3        = { {3, 7}, {11, 15} }
      // +5        = { 
  }
+
+ TEST_CASE("Row vector: sum and mean") {
+    // A row vector (1 x K matrix)
+    Matrix rowVec({ {1, 2, 3, 4} });
+    
+    // Expected sum: 1 + 2 + 3 + 4 = 10
+    CHECK(rowVec.sum() == 10);
+    
+    // Expected mean: 10 / 4 = 2.5
+    CHECK(rowVec.mean() == doctest::Approx(2.5));
+}
+
+TEST_CASE("Column vector: sum and mean") {
+    // A column vector (K x 1 matrix)
+    Matrix colVec({ {1}, {2}, {3}, {4} });
+    
+    // Expected sum: 1 + 2 + 3 + 4 = 10
+    CHECK(colVec.sum() == 10);
+    
+    // Expected mean: 10 / 4 = 2.5
+    CHECK(colVec.mean() == doctest::Approx(2.5));
+}
+
+TEST_CASE("Non-vector matrix: sum throws invalid_argument") {
+    // A matrix that is neither a single row nor a single column (e.g. 2x2)
+    Matrix nonVector({ {1, 2}, {3, 4} });
+    
+    // Expect the sum() function to throw an invalid_argument exception.
+    CHECK_THROWS_AS(nonVector.sum(), std::invalid_argument);
+}

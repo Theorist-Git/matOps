@@ -674,7 +674,7 @@ class Matrix {
         /**
          * @brief Computes the sum of the elements of a vector.
          *
-         * This function calculates the sum of elements for matrices that are
+         * Calculates the sum of elements for matrices that are
          * considered as vectors. It supports both column vectors (K x 1) and
          * row vectors (1 x K). 
          *
@@ -709,7 +709,7 @@ class Matrix {
         /**
          * @brief Computes the mean (average) of the elements of a vector.
          *
-         * This function calculates the mean value for matrices that are considered as vectors.
+         * Calculates the mean value for matrices that are considered as vectors.
          * It supports both row vectors (1 x K) and column vectors (K x 1) by dividing the sum
          * of the elements by the number of elements in the vector.
          *
