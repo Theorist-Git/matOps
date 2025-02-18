@@ -672,6 +672,59 @@ class Matrix {
         }
 
         /**
+         * @brief Computes the sum of the elements of a vector.
+         *
+         * This function calculates the sum of elements for matrices that are
+         * considered as vectors. It supports both column vectors (K x 1) and
+         * row vectors (1 x K). 
+         *
+         * @return The sum of all elements in the vector.
+         * @throws std::invalid_argument If the matrix is not a one-dimensional vector.
+         */
+        double sum() const {
+            bool colMatrix = this->ncols == 1;
+            bool rowMatrix = this->nrows == 1;
+
+            if ( !colMatrix && !rowMatrix ) {
+                throw std::invalid_argument("Sum can only be calculated for (K, 1) or (1, K) dim matrices");
+            }
+
+            double total = 0.0;
+
+            if ( rowMatrix ) {
+                for (auto& num: this->container[0]) {
+                    total += num;
+                }
+
+                return total;
+            }
+
+            for (auto& row : this->container) {
+                total += row[0];
+            }
+
+            return total;
+        }
+
+        /**
+         * @brief Computes the mean (average) of the elements of a vector.
+         *
+         * This function calculates the mean value for matrices that are considered as vectors.
+         * It supports both row vectors (1 x K) and column vectors (K x 1) by dividing the sum
+         * of the elements by the number of elements in the vector.
+         *
+         * @return The mean (average) value of the vector elements.
+         * @throws std::invalid_argument If the matrix is not a one-dimensional vector.
+         */
+        double mean() const {
+            
+            double sum   = this->sum();
+            size_t count = (this->nrows == 1) ? this->ncols : this->nrows;
+            
+            return sum / count;
+        }
+
+        /**
          * @brief Outputs the matrix to an output stream.
          *
          * @param os The output stream.

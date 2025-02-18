@@ -3,7 +3,7 @@ bin/
 simpleLinearRegression.cpp
 simpleLinearRegression
 test
-test.cpp
+myTest.cpp
 html/
 latex/
 Doxyfile
