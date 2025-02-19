@@ -26,48 +26,6 @@ class Matrix {
 
         std::vector<std::vector<double>> container; ///< 2D vector holding matrix elements.
 
-        /**
-         * @brief Recursively computes the determinant of a given square matrix.
-         *
-         * @param matrix A 2D vector representing a square matrix.
-         * @return The determinant as a double.
-         * @note This is a private helper function used by the public determinant() method.
-         */
-        double _det(const std::vector<std::vector<double>> &matrix) const {
-
-            size_t n = matrix.size();
-            
-            // Base case: 1x1 matrix
-            if (n == 1) {
-                return matrix[0][0];
-            }
-            
-            // Base case: 2x2 matrix
-            if (n == 2) {
-                return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-            }
-            
-            double det = 0.0;
-
-            for (size_t col = 0; col < n; col++) {
-                std::vector<std::vector<double>> minor;
-                for (size_t i = 1; i < n; i++) {
-                    std::vector<double> row;
-                    for (size_t j = 0; j < n; j++) {
-                        if (j == col)
-                            continue;
-                        row.push_back(matrix[i][j]);
-                    }
-                    minor.push_back(row);
-                }
-                
-                double sign = (col % 2 == 0) ? 1.0 : -1.0;
-                det += sign * matrix[0][col] * _det(minor);
-            }
-            
-            return det;
-        }
-
     public:
         /**
          * @brief Returns the dimensions of the matrix.
@@ -121,6 +79,21 @@ class Matrix {
             this->ncols = cols;
 
             this->container = std::vector<std::vector<double>>(rows, std::vector<double>(cols, initialValue));
+        }
+
+        /**
+         * @brief Constructs an Identity Matrix of specified dimensions.
+         *
+         * @param dim Dimensions of matrix (dim x dim).
+         */
+        static Matrix identity(size_t dim) {
+            std::vector<std::vector<double>> I(dim, std::vector<double>(dim, 0.0));
+
+            for (size_t i = 0; i < dim; ++i) {
+                I[i][i] = 1.0;
+            }
+
+            return Matrix(I);
         }
 
         /**
@@ -420,7 +393,47 @@ class Matrix {
                 throw std::invalid_argument("Det only for sq. matrices");
             }
             
-            return _det(this->container);
+            size_t n = this->container.size();
+
+            std::vector<std::vector<double>> LU = this->container;
+            int numRowSwaps = 0;
+        
+            // Perform LU Decomposition with partial pivoting.
+            for (size_t i = 0; i < n; i++) {
+                // Find the pivot in column i.
+                double maxVal = std::abs(LU[i][i]);
+                size_t pivotRow = i;
+                for (size_t k = i + 1; k < n; k++) {
+                    double val = std::abs(LU[k][i]);
+                    if (val > maxVal) {
+                        maxVal = val;
+                        pivotRow = k;
+                    }
+                }
+
+                if (std::abs(maxVal) < 1e-12) {
+                    return 0.0;
+                }
+
+                if (pivotRow != i) {
+                    std::swap(LU[i], LU[pivotRow]);
+                    numRowSwaps++;
+                }
+
+                for (size_t j = i + 1; j < n; j++) {
+                    LU[j][i] /= LU[i][i];
+                    for (size_t k = i + 1; k < n; k++) {
+                        LU[j][k] -= LU[j][i] * LU[i][k];
+                    }
+                }
+            }
+
+            double det = (numRowSwaps % 2 == 0) ? 1.0 : -1.0;
+            for (size_t i = 0; i < n; i++) {
+                det *= LU[i][i];
+            }
+
+            return det;
         }
 
         /**
@@ -431,52 +444,57 @@ class Matrix {
          * @note The shape remains unchanged.
          */
         Matrix inverse() const {
-            double det = this->determinant();
-            constexpr double EPS = 1e-9;
-
-            if (std::abs(det) < EPS) {
-                throw std::runtime_error("Singular matrix");
+            if (nrows != ncols) {
+                throw std::invalid_argument("Matrix must be square to invert.");
             }
 
-            std::vector<std::vector<double>> cof(this->nrows, std::vector<double>(this->ncols, 0.0));
+            constexpr double EPS = 1e-9;
+            size_t n = nrows;
+            
+            // Make copies: one for the working matrix (A) and one for the identity (I)
+            Matrix A(*this);
+            Matrix I = Matrix::identity(n);
+            
+            // Gauss–Jordan elimination.
+            for (size_t i = 0; i < n; ++i) {
+                
+                size_t pivot = i;
+                for (size_t j = i + 1; j < n; ++j) {
+                    if (std::abs(A.container[j][i]) > std::abs(A.container[pivot][i])) {
+                        pivot = j;
+                    }
+                }
+                if (std::abs(A.container[pivot][i]) < EPS) {
+                    throw std::runtime_error("Singular matrix");
+                }
+                
+                
+                std::swap(A.container[i], A.container[pivot]);
+                std::swap(I.container[i], I.container[pivot]);
+                
+                // Normalize the pivot row.
+                double pivotVal = A.container[i][i];
+                for (size_t j = 0; j < n; ++j) {
+                    A.container[i][j] /= pivotVal;
+                    I.container[i][j] /= pivotVal;
+                }
+                
+                
+                for (size_t k = 0; k < n; ++k) {
 
-            for (size_t i = 0; i < this->nrows; ++i) {
-                for (size_t j = 0; j < this->ncols; ++j) {
-
-                    std::vector<std::vector<double>> minor;
-
-                    for (size_t mi = 0; mi < this->nrows; ++mi) {
-
-                        if (mi == i) continue;
-
-                        std::vector<double> row;
-
-                        for (size_t mj = 0; mj < this->ncols; ++mj) {
-                            if (mj == j) continue;
-
-                            row.push_back(this->container[mi][mj]);
-                        }
-
-                        minor.push_back(row);
+                    if (k == i) {
+                        continue;
                     }
 
-                    double minorDet = _det(minor);
-                    double sign = ((i + j) % 2 == 0) ? 1.0 : -1.0;
-
-                    cof[i][j] = sign * minorDet;
+                    double factor = A.container[k][i];
+                    for (size_t j = 0; j < n; ++j) {
+                        A.container[k][j] -= factor * A.container[i][j];
+                        I.container[k][j] -= factor * I.container[i][j];
+                    }
                 }
             }
-
-            Matrix inv(cof);
-            inv = inv.transpose();
-
-            for (size_t i = 0; i < this->nrows; ++i) {
-                for (size_t j = 0; j < this->ncols; ++j) {
-                    inv.container[i][j] = inv.container[i][j] / det;
-                }
-            }
-
-            return inv;
+            
+            return I;
         }
 
         /**
