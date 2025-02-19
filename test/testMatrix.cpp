@@ -537,3 +537,47 @@ TEST_CASE("Non-vector matrix: sum throws invalid_argument") {
     // Expect the sum() function to throw an invalid_argument exception.
     CHECK_THROWS_AS(nonVector.sum(), std::invalid_argument);
 }
+
+TEST_CASE("Matrix exponentiation with scalar 1 returns the same matrix") {
+    Matrix m({ {1.0, 2.0},
+               {3.0, 4.0} });
+    Matrix result = m ^ 1.0;
+    // The matrix should be unchanged
+    CHECK(result == m);
+}
+
+TEST_CASE("Matrix exponentiation with scalar 2 returns element-wise square") {
+    Matrix m({ {1.0, 2.0},
+               {3.0, 4.0} });
+    Matrix result = m ^ 2.0;
+    Matrix expected({ {std::pow(1.0, 2.0), std::pow(2.0, 2.0)},
+                      {std::pow(3.0, 2.0), std::pow(4.0, 2.0)} });
+    CHECK(result == expected);
+}
+
+TEST_CASE("Matrix exponentiation with scalar 0 returns element-wise 1 (nonzero elements)") {
+    Matrix m({ {1.0, 2.0},
+               {3.0, 4.0} });
+    Matrix result = m ^ 0.0;
+    // For any nonzero x, std::pow(x, 0) is 1.
+    Matrix expected({ {1.0, 1.0},
+                      {1.0, 1.0} });
+    CHECK(result == expected);
+}
+
+TEST_CASE("Matrix exponentiation when an element is 0 and exponent is <= 0") {
+    // For elements equal to 0 and a non-positive exponent, our operator prints a warning
+    // and returns 0. We test that behavior here.
+    Matrix m({ {0.0, 2.0},
+               {3.0, 0.0} });
+    Matrix result = m ^ (-1.0);
+    
+    // For nonzero numbers, std::pow(x, -1) is the reciprocal.
+    Matrix expected({ {0.0, std::pow(2.0, -1.0)},
+                      {std::pow(3.0, -1.0), 0.0} });
+    // Use Approx for floating point comparisons
+    CHECK(result(0,0) == doctest::Approx(expected(0,0)));
+    CHECK(result(0,1) == doctest::Approx(expected(0,1)));
+    CHECK(result(1,0) == doctest::Approx(expected(1,0)));
+    CHECK(result(1,1) == doctest::Approx(expected(1,1)));
+}
