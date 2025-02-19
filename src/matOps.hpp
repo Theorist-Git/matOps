@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include<cmath>
 #pragma once
 
 /**
@@ -341,6 +342,27 @@ class Matrix {
 
             Matrix devRes = *this;
             return devRes * (1 / scalar);
+        }
+
+        Matrix operator^(double scalar) const {
+
+            if (scalar == 1) {
+                return *this;
+            }
+
+            Matrix expRes = *this;
+
+            for (std::vector<double>& row: expRes.container) {
+                for (double& num: row) {
+                    if (num == 0 && scalar <= 0) {
+                        std::cout << "[WARNING]: Div by 0 occured" << std::endl;
+                        continue;
+                    }
+                    num = pow(num, scalar);
+                }
+            }
+
+            return expRes;
         }
 
         /**
