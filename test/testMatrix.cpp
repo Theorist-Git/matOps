@@ -416,11 +416,11 @@
   * @brief Tests for equality comparisons with tolerance.
   */
  TEST_CASE("Equality Tolerance Test") {
-     std::vector<std::vector<double>> a = { {1.0000000001, 2}, {3, 4} };
+     std::vector<std::vector<double>> a = { {1.0000000000001, 2}, {3, 4} };
      std::vector<std::vector<double>> b = { {1, 2}, {3, 4} };
      Matrix m1(a);
      Matrix m2(b);
-     // The difference is within EPS (1e-9) so they should be equal.
+     // The difference is within EPS (1e-12) so they should be equal.
      CHECK(m1 == m2);
  }
  

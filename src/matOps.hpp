@@ -3,6 +3,8 @@
 #include<cmath>
 #pragma once
 
+#define EPS 1e-12
+
 /**
  * @class Matrix
  * @brief A simple linear algebra library for matrix operations.
@@ -225,8 +227,6 @@ class Matrix {
                 return false;
             }
 
-            constexpr double EPS = 1e-9;
-
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     if ( std::abs(this->container[i][j] - other.container[i][j]) > EPS) {
@@ -411,7 +411,7 @@ class Matrix {
                     }
                 }
 
-                if (std::abs(maxVal) < 1e-12) {
+                if (std::abs(maxVal) < EPS) {
                     return 0.0;
                 }
 
@@ -448,7 +448,6 @@ class Matrix {
                 throw std::invalid_argument("Matrix must be square to invert.");
             }
 
-            constexpr double EPS = 1e-9;
             size_t n = nrows;
             
             // Make copies: one for the working matrix (A) and one for the identity (I)
