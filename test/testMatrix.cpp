@@ -423,6 +423,28 @@
      // The difference is within EPS (1e-12) so they should be equal.
      CHECK(m1 == m2);
  }
+
+ TEST_CASE("Matrix Inequality Operator") {
+    SUBCASE("Matrices with different dimensions are not equal") {
+        std::vector<std::vector<double>> a = { {1.0, 2.0}, {3.0, 4.0} };
+        std::vector<std::vector<double>> b = { {1.0, 2.0} };
+        Matrix m1(a), m2(b);
+        CHECK(m1 != m2);
+    }
+
+    SUBCASE("Matrices with same dimensions but different elements are not equal") {
+        std::vector<std::vector<double>> a = { {1.0, 2.0}, {3.0, 4.0} };
+        std::vector<std::vector<double>> b = { {1.0, 2.0}, {3.0, 5.0} };
+        Matrix m1(a), m2(b);
+        CHECK(m1 != m2);
+    }
+
+    SUBCASE("Identical matrices are equal") {
+        std::vector<std::vector<double>> a = { {1.0, 2.0}, {3.0, 4.0} };
+        Matrix m1(a), m2(a);
+        CHECK(!(m1 != m2));
+    }
+}
  
  /**
   * @brief Tests for copy construction and assignment operator.
@@ -580,4 +602,34 @@ TEST_CASE("Matrix exponentiation when an element is 0 and exponent is <= 0") {
     CHECK(result(0,1) == doctest::Approx(expected(0,1)));
     CHECK(result(1,0) == doctest::Approx(expected(1,0)));
     CHECK(result(1,1) == doctest::Approx(expected(1,1)));
+}
+
+TEST_CASE("Matrix shuffleRows methods") {
+    std::vector<std::vector<double>> data = {
+        {1.0, 2.0, 3.0},
+        {4.0, 5.0, 6.0},
+        {7.0, 8.0, 9.0},
+        {10.0, 11.0, 12.0}
+    };
+
+    SUBCASE("Reproducibility with fixed seed") {
+        Matrix m1(data), m2(data);
+        m1.shuffleRows(12345);
+        m2.shuffleRows(12345);
+        // With the same seed, the shuffles should produce identical matrices.
+        CHECK(m1 == m2);
+    }
+
+    SUBCASE("Randomized shuffle preserves rows") {
+        Matrix m(data);
+        // Make a copy of the original ordering using the public getter.
+        auto original = m.toVector();
+        m.shuffleRows();
+        // To check data integrity, sort the rows (by lexicographical order) and compare.
+        auto sorted_original = original;
+        auto sorted_shuffled = m.toVector();
+        std::sort(sorted_original.begin(), sorted_original.end());
+        std::sort(sorted_shuffled.begin(), sorted_shuffled.end());
+        CHECK(sorted_original == sorted_shuffled);
+    }
 }
