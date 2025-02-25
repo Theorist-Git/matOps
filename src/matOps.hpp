@@ -731,12 +731,10 @@ class Matrix {
          * @brief Extracts a submatrix from the current Matrix.
          *
          * Given a pair of row indices and a pair of column indices, this function creates
-         * and returns a new Matrix containing the submatrix defined by the specified ranges.
-         * Both row and column ranges are inclusive, meaning that the elements at both the start
-         * and end indices are included in the result.
-         *
-         * @param rowSlice A std::pair<size_t, size_t> representing the start and end row indices (inclusive).
-         * @param colSlice A std::pair<size_t, size_t> representing the start and end column indices (inclusive).
+         * and returns a new Matrix containing the submatrix defined by the specified ranges [start, end).
+
+         * @param rowSlice A std::pair<size_t, size_t> representing the start and end row indices.
+         * @param colSlice A std::pair<size_t, size_t> representing the start and end column indices.
          * @return A new Matrix object containing the extracted submatrix.
          * @throws std::out_of_range If any indices are out of bounds or if the slice ranges are invalid.
          *
@@ -744,10 +742,10 @@ class Matrix {
          */
         Matrix extractMatrix(std::pair<size_t, size_t> rowSlice, std::pair<size_t, size_t> colSlice) const {
             size_t rowStart = rowSlice.first;
-            size_t rowEnd   = rowSlice.second;
+            size_t rowEnd   = rowSlice.second - 1;
 
             size_t colStart = colSlice.first;
-            size_t colEnd   = colSlice.second;
+            size_t colEnd   = colSlice.second - 1;
 
             if (
                 rowStart >= this->nrows ||  // Check if rowStart is out of bounds
