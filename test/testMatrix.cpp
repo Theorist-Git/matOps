@@ -370,47 +370,35 @@
      }
  }
  
- /**
-  * @brief Tests for Matrix submatrix extraction functionality.
-  */
- TEST_CASE("Matrix Submatrix Extraction") {
-     std::vector<std::vector<double>> a = { {1, 2, 3},
-                                              {4, 5, 6},
-                                              {7, 8, 9} };
-     Matrix m(a);
- 
-     /**
-      * @brief Valid submatrix extraction.
-      * Extracts a submatrix (rows 0-1, columns 1-2) and compares with the expected result.
-      */
-     SUBCASE("Valid submatrix extraction") {
-         Matrix sub = m.extractMatrix({0, 1}, {1, 2});
-         std::vector<std::vector<double>> expected = { {2, 3}, {5, 6} };
-         Matrix expectedMat(expected);
-         CHECK(sub == expectedMat);
-     }
- 
-     /**
-      * @brief Invalid extraction due to row indices out of bounds.
-      */
-     SUBCASE("Invalid extraction: row indices out of bounds") {
-         CHECK_THROWS_AS(m.extractMatrix({0, 3}, {0, 1}), std::out_of_range);
-     }
- 
-     /**
-      * @brief Invalid extraction when start index is greater than end index (rows).
-      */
-     SUBCASE("Invalid extraction: start index greater than end index (rows)") {
-         CHECK_THROWS_AS(m.extractMatrix({2, 1}, {0, 1}), std::out_of_range);
-     }
- 
-     /**
-      * @brief Invalid extraction when start index is greater than end index (columns).
-      */
-     SUBCASE("Invalid extraction: start index greater than end index (cols)") {
-         CHECK_THROWS_AS(m.extractMatrix({0, 1}, {2, 1}), std::out_of_range);
-     }
- }
+ /// @brief Tests for Matrix submatrix extraction functionality using exclusive indices.
+TEST_CASE("Matrix Submatrix Extraction") {
+    // Original 3x3 matrix:
+    std::vector<std::vector<double>> a = { {1, 2, 3},
+                                             {4, 5, 6},
+                                             {7, 8, 9} };
+    Matrix m(a);
+
+    SUBCASE("Valid submatrix extraction") {
+        // Extract rows [0,2) -> rows 0 and 1, and columns [1,3) -> columns 1 and 2.
+        Matrix sub = m.extractMatrix({0, 2}, {1, 3});
+        std::vector<std::vector<double>> expected = { {2, 3}, {5, 6} };
+        Matrix expectedMat(expected);
+        CHECK(sub == expectedMat);
+    }
+
+    SUBCASE("Invalid extraction: row indices out of bounds") {
+        // For a 3-row matrix, row index 4 is out-of-bounds (valid exclusive end is 3).
+        CHECK_THROWS_AS(m.extractMatrix({0, 4}, {0, 2}), std::out_of_range);
+    }
+
+    SUBCASE("Invalid extraction: start index greater than end index (rows)") {
+        CHECK_THROWS_AS(m.extractMatrix({2, 1}, {0, 2}), std::out_of_range);
+    }
+
+    SUBCASE("Invalid extraction: start index greater than end index (columns)") {
+        CHECK_THROWS_AS(m.extractMatrix({0, 2}, {2, 1}), std::out_of_range);
+    }
+}
  
  /**
   * @brief Tests for equality comparisons with tolerance.
@@ -490,27 +478,33 @@
   * @brief Tests for submatrix extraction of a single row and a single column.
   */
  TEST_CASE("Single Row and Single Column Submatrix Extraction") {
-     std::vector<std::vector<double>> a = { {10, 20, 30},
-                                              {40, 50, 60},
-                                              {70, 80, 90} };
-     Matrix m(a);
-     
-     /**
-      * @brief Extract the second row as a 1x3 matrix.
-      */
-     Matrix rowExtract = m.extractMatrix({1, 1}, {0, 2});
-     std::vector<std::vector<double>> expectedRow = { {40, 50, 60} };
-     Matrix expectedRowMat(expectedRow);
-     CHECK(rowExtract == expectedRowMat);
-     
-     /**
-      * @brief Extract the third column as a 3x1 matrix.
-      */
-     Matrix colExtract = m.extractMatrix({0, 2}, {2, 2});
-     std::vector<std::vector<double>> expectedCol = { {30}, {60}, {90} };
-     Matrix expectedColMat(expectedCol);
-     CHECK(colExtract == expectedColMat);
- }
+    std::vector<std::vector<double>> a = { {10, 20, 30},
+                                           {40, 50, 60},
+                                           {70, 80, 90} };
+    Matrix m(a);
+    
+    /**
+     * @brief Extract the second row as a 1x3 matrix.
+     * Using row indices [1,2) and column indices [0,3).
+     */
+    SUBCASE("Extract a single row") {
+        Matrix rowExtract = m.extractMatrix({1, 2}, {0, 3});
+        std::vector<std::vector<double>> expectedRow = { {40, 50, 60} };
+        Matrix expectedRowMat(expectedRow);
+        CHECK(rowExtract == expectedRowMat);
+    }
+
+    /**
+     * @brief Extract the third column as a 3x1 matrix.
+     * Using row indices [0,3) and column indices [2,3).
+     */
+    SUBCASE("Extract a single column") {
+        Matrix colExtract = m.extractMatrix({0, 3}, {2, 3});
+        std::vector<std::vector<double>> expectedCol = { {30}, {60}, {90} };
+        Matrix expectedColMat(expectedCol);
+        CHECK(colExtract == expectedColMat);
+    }
+}
  
  /**
   * @brief Tests for chained mixed arithmetic operations.
@@ -632,4 +626,23 @@ TEST_CASE("Matrix shuffleRows methods") {
         std::sort(sorted_shuffled.begin(), sorted_shuffled.end());
         CHECK(sorted_original == sorted_shuffled);
     }
+}
+
+TEST_CASE("Matrix::constValMatrix creates a constant matrix") {
+    Matrix m = Matrix::constValMatrix(2, 3, 7.0);
+    std::pair<size_t, size_t> dims = m.shape();
+    size_t rows = dims.first;
+    size_t cols = dims.second;
+    CHECK(rows == 2);
+    CHECK(cols == 3);
+    for (size_t i = 0; i < rows; i++) {
+        for (size_t j = 0; j < cols; j++) {
+            CHECK(m(i, j) == 7.0);
+        }
+    }
+}
+
+TEST_CASE("Matrix::constValMatrix throws for zero dimensions") {
+    CHECK_THROWS_AS(Matrix::constValMatrix(0, 3, 7.0), std::invalid_argument);
+    CHECK_THROWS_AS(Matrix::constValMatrix(3, 0, 7.0), std::invalid_argument);
 }

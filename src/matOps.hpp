@@ -101,6 +101,25 @@ class Matrix {
         }
 
         /**
+         * @brief Creates a matrix with constant values.
+         *
+         * Function constructs and returns a Matrix object with the specified
+         * dimensions, initializing every element to the given constant value.
+         *
+         * @param rows The number of rows in the matrix.
+         * @param cols The number of columns in the matrix.
+         * @param val The constant value to initialize each element of the matrix.
+         * @return A Matrix object of dimensions (rows x cols) where each element is set to @p val.
+         * @throws std::invalid_argument if either @p rows or @p cols is zero.
+         */
+        static Matrix constValMatrix(size_t rows, size_t cols, double val) {
+            if (rows == 0 || cols == 0) {
+                throw std::invalid_argument("Matrix has zerio dimensions");
+            }
+            return Matrix(std::vector<std::vector<double>>(rows, std::vector<double>(cols, val)));
+        }
+
+        /**
          * @brief Returns a copy of the matrix data.
          *
          * This function returns a new 2D vector containing the matrix elements.
