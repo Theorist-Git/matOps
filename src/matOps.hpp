@@ -68,7 +68,14 @@ class Matrix {
 
         /**
          * @brief Constructs an Identity Matrix of specified dimensions.
-         *
+         * @code
+         * Matrix A = Matrix::identity(3);
+         * A = [
+         *      [1, 0, 0]
+         *      [0, 1, 0]
+         *      [0, 0, 1]
+         * ]
+         * @endcode
          * @param dim Dimensions of matrix (dim x dim).
          */
         static Matrix identity(size_t dim) {
@@ -86,6 +93,17 @@ class Matrix {
          *
          * Function constructs and returns a Matrix object with the specified
          * dimensions, initializing every element to the given constant value.
+         * 
+         * Example usage:
+         * @code
+         * // Create a 3x3 matrix filled with 5.0
+         * Matrix A = Matrix::constValMatrix(3, 3, 5.0);
+         *
+         * // Expected Output:
+         * //  5.0  5.0  5.0
+         * //  5.0  5.0  5.0
+         * //  5.0  5.0  5.0
+         * @endcode
          *
          * @param rows The number of rows in the matrix.
          * @param cols The number of columns in the matrix.
