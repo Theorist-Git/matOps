@@ -7,6 +7,7 @@
 #pragma once
 
 #define EPS 1e-12
+#define OPENMP_THRESHOLD 10000
 
 /**
  * @class Matrix
@@ -314,7 +315,9 @@ class Matrix {
 
             std::vector<std::vector<double>> mulResContainer(this->nrows, std::vector<double>(other.ncols));
 
-            #pragma omp parallel for
+            const size_t totalElements = this->ncols * this->nrows;
+
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < other.ncols; ++j) {
                     double sum = 0.0;
@@ -339,8 +342,9 @@ class Matrix {
          */
         Matrix operator*(double scalar) const {
             Matrix mulRes = *this;
+            const size_t totalElements = this->ncols * this->nrows;
 
-            #pragma omp parallel for
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     mulRes.container[i][j] *= scalar;
