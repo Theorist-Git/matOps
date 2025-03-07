@@ -314,6 +314,7 @@ class Matrix {
 
             std::vector<std::vector<double>> mulResContainer(this->nrows, std::vector<double>(other.ncols));
 
+            #pragma omp parallel for
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < other.ncols; ++j) {
                     double sum = 0.0;
@@ -339,6 +340,7 @@ class Matrix {
         Matrix operator*(double scalar) const {
             Matrix mulRes = *this;
 
+            #pragma omp parallel for
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     mulRes.container[i][j] *= scalar;
