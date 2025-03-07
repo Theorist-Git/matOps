@@ -67,26 +67,6 @@ class Matrix {
         }
 
         /**
-         * @brief Constructs a Matrix with specified dimensions and an initial value.
-         *
-         * @param rows Number of rows.
-         * @param cols Number of columns.
-         * @param initialValue The value to initialize each element.
-         * @throws std::invalid_argument if rows or cols are 0.
-         * @note The shape is (rows x cols).
-         */
-        Matrix(size_t rows, size_t cols, double initialValue) {
-            if (rows == 0 || cols == 0) {
-                throw std::invalid_argument("Matrix dimensions must be greater than 0.");
-            }
-
-            this->nrows = rows;
-            this->ncols = cols;
-
-            this->container = std::vector<std::vector<double>>(rows, std::vector<double>(cols, initialValue));
-        }
-
-        /**
          * @brief Constructs an Identity Matrix of specified dimensions.
          *
          * @param dim Dimensions of matrix (dim x dim).
@@ -394,8 +374,7 @@ class Matrix {
             for (std::vector<double>& row: expRes.container) {
                 for (double& num: row) {
                     if (num == 0 && scalar <= 0) {
-                        std::cout << "[WARNING]: Div by 0 occured" << std::endl;
-                        continue;
+                        throw std::runtime_error("Division by zero occured. (0 ^ ( <=0 ))");
                     }
                     num = pow(num, scalar);
                 }
@@ -834,6 +813,55 @@ class Matrix {
 
             for (auto& row : this->container) {
                 total += row[0];
+            }
+
+            return total;
+        }
+
+        /**
+         * @brief Computes the sum of all elements raised to a specified power.
+         *
+         * This function calculates the sum of each element in the matrix after raising
+         * it to the given @p power. The function only works for matrices that are either
+         * a row matrix (1 x K) or a column matrix (K x 1). If the matrix has any other dimensions,
+         * an std::invalid_argument exception is thrown.
+         *
+         * Additionally, if an element is zero and the @p power is less than or equal to zero,
+         * the function will throw an std::runtime_error to indicate a division by zero scenario,
+         * since 0 raised to a non-positive power is undefined.
+         *
+         * @param power The exponent to which each element in the matrix is raised.
+         * @return The sum of all elements raised to the specified power.
+         *
+         * @throws std::invalid_argument if the matrix dimensions are not (1, K) or (K, 1).
+         * @throws std::runtime_error if any element is zero and @p power is less than or equal to zero.
+         */
+        double sum(double power) const {
+            bool colMatrix = this->ncols == 1;
+            bool rowMatrix = this->nrows == 1;
+
+            if ( !colMatrix && !rowMatrix ) {
+                throw std::invalid_argument("Sum can only be calculated for (K, 1) or (1, K) dim matrices");
+            }
+
+            double total = 0.0;
+
+            if ( rowMatrix ) {
+                for (auto& num: this->container[0]) {
+                    if (num == 0 && power <= 0) {
+                        throw std::runtime_error("Division by zero occured. (0 ^ ( <=0 ))");
+                    }
+                    total += pow(num, power);
+                }
+
+                return total;
+            }
+
+            for (auto& row : this->container) {
+                if (row[0] == 0 && power <= 0) {
+                    throw std::runtime_error("Division by zero occured. (0 ^ ( <=0 ))");
+                }
+                total += pow(row[0], power);
             }
 
             return total;

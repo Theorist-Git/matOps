@@ -586,16 +586,8 @@ TEST_CASE("Matrix exponentiation when an element is 0 and exponent is <= 0") {
     // and returns 0. We test that behavior here.
     Matrix m({ {0.0, 2.0},
                {3.0, 0.0} });
-    Matrix result = m ^ (-1.0);
-    
-    // For nonzero numbers, std::pow(x, -1) is the reciprocal.
-    Matrix expected({ {0.0, std::pow(2.0, -1.0)},
-                      {std::pow(3.0, -1.0), 0.0} });
-    // Use Approx for floating point comparisons
-    CHECK(result(0,0) == doctest::Approx(expected(0,0)));
-    CHECK(result(0,1) == doctest::Approx(expected(0,1)));
-    CHECK(result(1,0) == doctest::Approx(expected(1,0)));
-    CHECK(result(1,1) == doctest::Approx(expected(1,1)));
+
+    CHECK_THROWS_AS(m ^ (-1.0), std::runtime_error);
 }
 
 TEST_CASE("Matrix shuffleRows methods") {
@@ -645,4 +637,35 @@ TEST_CASE("Matrix::constValMatrix creates a constant matrix") {
 TEST_CASE("Matrix::constValMatrix throws for zero dimensions") {
     CHECK_THROWS_AS(Matrix::constValMatrix(0, 3, 7.0), std::invalid_argument);
     CHECK_THROWS_AS(Matrix::constValMatrix(3, 0, 7.0), std::invalid_argument);
+}
+
+TEST_CASE("Row matrix: valid sum calculation with positive power") {
+    Matrix m = Matrix({ {1, 2, 3} });
+    // Calculate sum = 1^2 + 2^2 + 3^2 = 1 + 4 + 9 = 14
+    CHECK(m.sum(2) == doctest::Approx(14.0));
+}
+
+TEST_CASE("Column matrix: valid sum calculation with positive power") {
+    Matrix m = Matrix({ {1}, {2}, {3} });
+    // Calculate sum = 1^3 + 2^3 + 3^3 = 1 + 8 + 27 = 36
+    CHECK(m.sum(3) == doctest::Approx(36.0));
+}
+
+TEST_CASE("Invalid matrix dimensions should throw invalid_argument") {
+    Matrix m = Matrix({ {1, 2}, {3, 4} });
+    CHECK_THROWS_AS(m.sum(1), std::invalid_argument);
+}
+
+TEST_CASE("Row matrix: zero element with non-positive power throws runtime_error") {
+    Matrix m = Matrix({ {0, 2, 3} });
+    // When power is 0 (or negative), 0^power is invalid
+    CHECK_THROWS_AS(m.sum(0), std::runtime_error);
+    // With a positive power the zero is valid: 0^1 = 0
+    CHECK_NOTHROW(m.sum(1));
+}
+
+TEST_CASE("Column matrix: zero element with non-positive power throws runtime_error") {
+    Matrix m = Matrix({ {0}, {2}, {3} });
+    CHECK_THROWS_AS(m.sum(-1), std::runtime_error);
+    CHECK_NOTHROW(m.sum(1));
 }
