@@ -669,3 +669,7 @@ TEST_CASE("Column matrix: zero element with non-positive power throws runtime_er
     CHECK_THROWS_AS(m.sum(-1), std::runtime_error);
     CHECK_NOTHROW(m.sum(1));
 }
+
+TEST_CASE("LARGE MATRIX OMP") {
+    
+}

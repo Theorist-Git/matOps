@@ -1,9 +1,5 @@
 .vscode
 bin/
-simpleLinearRegression.cpp
-simpleLinearRegression
-test
-myTest.*
 html/
 latex/
 Doxyfile

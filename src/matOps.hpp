@@ -145,6 +145,9 @@ class Matrix {
 
             Matrix addRes = *this; // addRes = A in A + B
 
+            const size_t totalElements = this->nrows * this->ncols;
+
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     addRes.container[i][j] += other.container[i][j];
