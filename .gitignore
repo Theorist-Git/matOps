@@ -2,4 +2,5 @@
 bin/
 html/
 latex/
+results/
 Doxyfile

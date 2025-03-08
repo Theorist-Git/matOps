@@ -4,8 +4,8 @@
 int main() {
 
     size_t rowsA = 10000;
-    size_t colsA = 100;
-    size_t rowsB = 100;
+    size_t colsA = 10;
+    size_t rowsB = 10;
     size_t colsB = 10000;
     size_t iterations = 10;
 
@@ -42,12 +42,11 @@ int main() {
     variance /= iterations;
     double stddev = std::sqrt(variance);
 
-    std::cout << "\nBenchmark Results:" << std::endl;
+    std::cout << "\nBenchmark Results: A(" << rowsA << " x " << rowsB << ") * B(" << colsA << " x " << colsB << ")"<< std::endl;
     std::cout << "Average time: " << average << " ms" << std::endl;
     std::cout << "Minimum time: " << min_time << " ms" << std::endl;
     std::cout << "Maximum time: " << max_time << " ms" << std::endl;
     std::cout << "Standard deviation: " << stddev << " ms" << std::endl;
-
     
     return 0;
 }
