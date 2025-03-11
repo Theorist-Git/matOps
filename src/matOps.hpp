@@ -174,7 +174,7 @@ class Matrix {
 
             const size_t totalElements = this->ncols * this->nrows;
 
-            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) schedule(guided, 32) collapse(2)
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     addRes.container[i][j] += other.container[i][j];
@@ -196,7 +196,7 @@ class Matrix {
             
             const size_t totalElements = this->ncols * this->nrows;
 
-            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) schedule(guided, 32) collapse(2)
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     addRes.container[i][j] += scalar;
@@ -235,7 +235,7 @@ class Matrix {
 
             const size_t totalElements = this->ncols * this->nrows;
 
-            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) schedule(guided, 32) collapse(2)
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     subRes.container[i][j] -= other.container[i][j];
@@ -257,7 +257,7 @@ class Matrix {
 
             const size_t totalElements = this->ncols * this->nrows;
 
-            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) schedule(guided, 32) collapse(2)
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     subRes.container[i][j] -= scalar;
@@ -280,7 +280,7 @@ class Matrix {
 
             const size_t totalElements = other.ncols * other.nrows;
 
-            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) schedule(guided, 32) collapse(2)
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < subRes.nrows; ++i) {
                 for (size_t j = 0; j < subRes.ncols; ++j) {
                     subRes.container[i][j] = scalar - subRes.container[i][j];
@@ -341,20 +341,19 @@ class Matrix {
                 throw std::invalid_argument("Incorrect dims: For matrix m x n and p x r, n must be equal to p.");
             }
 
-            std::vector<std::vector<double>> mulResContainer(this->nrows, std::vector<double>(other.ncols));
+            std::vector<std::vector<double>> mulResContainer(this->nrows, std::vector<double>(other.ncols, 0));
 
             const size_t totalElements = this->ncols * this->nrows;
 
-            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) schedule(guided, 32) collapse(2)
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
-                for (size_t j = 0; j < other.ncols; ++j) {
-                    double sum = 0.0;
+                for (size_t k = 0; k < this->ncols; ++k) {
+                    
+                    double Aik = this->container[i][k]; // Cache the A[i][k] element.
 
-                    for (size_t k = 0; k < this->ncols; ++k) {
-                        sum += this->container[i][k] * other.container[k][j];
+                    for (size_t j = 0; j < other.ncols; ++j) {
+                        mulResContainer[i][j] += Aik * other.container[k][j];
                     }
-
-                    mulResContainer[i][j] = sum;
                 }
             }
 
@@ -372,7 +371,7 @@ class Matrix {
             Matrix mulRes = *this;
             const size_t totalElements = this->ncols * this->nrows;
 
-            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) schedule(guided, 32) collapse(2)
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     mulRes.container[i][j] *= scalar;
@@ -467,7 +466,7 @@ class Matrix {
 
             const size_t totalElements = this->ncols * this->nrows;
 
-            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) schedule(guided, 32) collapse(2)
+            #pragma omp parallel for if(totalElements > OPENMP_THRESHOLD) collapse(2)
             for (size_t i = 0; i < this->nrows; ++i) {
                 for (size_t j = 0; j < this->ncols; ++j) {
                     transposeContainer[j][i] = this->container[i][j];
