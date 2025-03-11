@@ -473,6 +473,35 @@ TEST_CASE("Matrix Submatrix Extraction") {
      // Allow for some numerical tolerance in the product.
      CHECK(prod == id);
  }
+
+ TEST_CASE("Testing Matrix::identity") {
+    SUBCASE("Identity matrix of non-zero dimension") {
+        const size_t dim = 3;
+        Matrix I = Matrix::identity(dim);
+
+        auto shape = I.shape();
+
+        // Check that the identity matrix has the correct dimensions.
+        CHECK(shape.first == dim);
+        CHECK(shape.second == dim);
+
+        // Verify that diagonal elements are 1 and off-diagonals are 0.
+        for (size_t i = 0; i < dim; ++i) {
+            for (size_t j = 0; j < dim; ++j) {
+                if (i == j) {
+                    CHECK(I(i, j) == 1.0);
+                } else {
+                    CHECK(I(i, j) == 0.0);
+                }
+            }
+        }
+    }
+
+    SUBCASE("Identity matrix with zero dimension throws an exception") {
+        // Since empty matrices are disallowed, identity(0) should throw.
+        CHECK_THROWS_AS(Matrix::identity(0), std::invalid_argument);
+    }
+}
  
  /**
   * @brief Tests for submatrix extraction of a single row and a single column.

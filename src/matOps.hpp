@@ -27,10 +27,22 @@
  */
 class Matrix {
     private:
-        size_t ncols; ///< Number of columns in the matrix.
-        size_t nrows; ///< Number of rows in the matrix.
-
         std::vector<std::vector<double>> container; ///< 2D vector holding matrix elements.
+        size_t nrows; ///< Number of rows in the matrix.
+        size_t ncols; ///< Number of columns in the matrix.
+
+        struct InternalTag {};
+
+        Matrix(std::vector<std::vector<double>>&& container, InternalTag)
+            : container(std::move(container)), 
+              nrows(this->container.size()),
+              ncols(this->container.empty() ? 0 : this->container[0].size()) {
+
+            if (nrows == 0 || ncols == 0) {
+                throw std::invalid_argument("Matrix is empty. Expected non-empty container.");
+            }
+            // No validation performed. Assumed well formed matrix.
+        }
 
     public:
         /**
@@ -85,7 +97,7 @@ class Matrix {
                 I[i][i] = 1.0;
             }
 
-            return Matrix(I);
+            return Matrix(std::move(I), InternalTag{});
         }
 
         /**
@@ -113,9 +125,10 @@ class Matrix {
          */
         static Matrix constValMatrix(size_t rows, size_t cols, double val) {
             if (rows == 0 || cols == 0) {
-                throw std::invalid_argument("Matrix has zerio dimensions");
+                throw std::invalid_argument("Matrix cannot have zero dimensions");
             }
-            return Matrix(std::vector<std::vector<double>>(rows, std::vector<double>(cols, val)));
+            
+            return Matrix(std::move(std::vector<std::vector<double>>(rows, std::vector<double>(cols, val))), InternalTag{});
         }
 
         /**
@@ -331,7 +344,7 @@ class Matrix {
                 }
             }
 
-            return Matrix(mulResContainer);
+            return Matrix(std::move(mulResContainer), InternalTag{});
         }
 
         /**
@@ -447,7 +460,7 @@ class Matrix {
                 }
             } 
 
-            return Matrix(transposeContainer);
+            return Matrix(std::move(transposeContainer), InternalTag{});
         }
 
         /**
@@ -804,7 +817,7 @@ class Matrix {
                 sliceRowIndex++;
             }
 
-            return Matrix(slice);
+            return Matrix(std::move(slice), InternalTag{});
         }
 
         /**
@@ -822,7 +835,7 @@ class Matrix {
                 throw std::invalid_argument("Row index out of range.");
             }
 
-            return Matrix({this->container[rowIdx]});
+            return Matrix({this->container[rowIdx]}, InternalTag{});
         }
 
         /**
