@@ -33,6 +33,20 @@ class Matrix {
 
         struct InternalTag {};
 
+        /**
+         * @brief Internal constructor for creating a Matrix by moving a pre-validated container.
+         *
+         * This constructor is intended for internal use only. It bypasses the usual
+         * validation performed in the public constructor, assuming that the provided
+         * container is already well-formed (i.e., non-empty and with consistent row sizes).
+         * The container is moved into the new Matrix object for efficient transfer of data.
+         *
+         * @param container An rvalue reference to a 2D vector of doubles representing the matrix elements.
+         * @param tag A dummy parameter (of type InternalTag) used to differentiate this constructor from the public one.
+         * @throws std::invalid_argument if the container is empty or if it contains no columns.
+         *
+         * @note This constructor does not perform full validation. It assumes that the input container is valid.
+         */
         Matrix(std::vector<std::vector<double>>&& container, InternalTag)
             : container(std::move(container)), 
               nrows(this->container.size()),
