@@ -765,11 +765,10 @@ class Matrix {
          * @param colSlice A std::pair<size_t, size_t> representing the start and end column indices.
          * @return A new Matrix object containing the extracted submatrix.
          * @throws std::out_of_range If any indices are out of bounds or if the slice ranges are invalid.
-         *
-         * @note Indices are zero-based (i.e., valid indices range from 0 to size() - 1).
          */
         Matrix extractMatrix(std::pair<size_t, size_t> rowSlice, std::pair<size_t, size_t> colSlice) const {
-            size_t rowStart = rowSlice.first;
+            /* Convert [start, end) to container indices */
+            size_t rowStart = rowSlice.first;       
             size_t rowEnd   = rowSlice.second - 1;
 
             size_t colStart = colSlice.first;
@@ -777,11 +776,11 @@ class Matrix {
 
             if (
                 rowStart >= this->nrows ||  // Check if rowStart is out of bounds
-                rowEnd >= this->nrows ||      // Check if rowEnd is out of bounds
-                rowStart > rowEnd ||                      // Ensure rowStart comes before rowEnd
-                colStart >= this->ncols || // Check if colStart is out of bounds
-                colEnd >= this->ncols ||      // Check if colEnd is out of bounds
-                colStart > colEnd                         // Ensure colStart comes before colEnd
+                rowEnd   >= this->nrows ||  // Check if rowEnd is out of bounds
+                rowStart >  rowEnd      ||  // Ensure rowStart comes before rowEnd
+                colStart >= this->ncols ||  // Check if colStart is out of bounds
+                colEnd   >= this->ncols ||  // Check if colEnd is out of bounds
+                colStart > colEnd           // Ensure colStart comes before colEnd
             ) {
                 throw std::out_of_range("Slice indices are out of bounds or invalid.");
             }
@@ -798,6 +797,7 @@ class Matrix {
             size_t sliceRowIndex = 0;
 
             for (size_t i = rowStart; i <= rowEnd; ++i) {
+                slice[sliceRowIndex].reserve(colEnd - colStart + 1);
                 for (size_t j = colStart; j <= colEnd; ++j) {
                     slice[sliceRowIndex].push_back(this->container[i][j]);
                 }
@@ -805,6 +805,42 @@ class Matrix {
             }
 
             return Matrix(slice);
+        }
+
+        /**
+         * @brief Extracts a specific row from the current Matrix.
+         *
+         * This function creates and returns a new Matrix object containing the row at the specified index.
+         * The row is extracted as a single-row submatrix.
+         *
+         * @param rowIdx The zero-based index of the row to extract.
+         * @return A new Matrix object containing the extracted row.
+         * @throws std::invalid_argument If the specified row index is out of range.
+         */
+        Matrix extractRow(size_t rowIdx) const {
+            if (rowIdx >= this->nrows) {
+                throw std::invalid_argument("Row index out of range.");
+            }
+
+            return Matrix({this->container[rowIdx]});
+        }
+
+        /**
+         * @brief Extracts a specific column from the current Matrix.
+         *
+         * This function calls Matrix::extractMatrix() under the hood
+         * as extracting a column will require the exact same logic.
+         *
+         * @param colIdx The zero-based index of the column to extract.
+         * @return A new Matrix object containing the extracted column.
+         * @throws std::invalid_argument If the specified column index is out of range.
+         */
+        Matrix extractCol(size_t colIdx) const {
+            if (colIdx >= this->ncols) {
+                throw std::invalid_argument("Column index out of range.");
+            }
+
+            return this->extractMatrix({0, this->nrows}, {colIdx, colIdx + 1});
         }
 
         /**

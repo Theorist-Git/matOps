@@ -3,4 +3,5 @@ bin/
 html/
 latex/
 results/
+test/local_test.cpp
 Doxyfile
