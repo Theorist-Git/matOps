@@ -670,6 +670,67 @@ TEST_CASE("Column matrix: zero element with non-positive power throws runtime_er
     CHECK_NOTHROW(m.sum(1));
 }
 
-TEST_CASE("LARGE MATRIX OMP") {
-    
+TEST_CASE("Testing Matrix::extractRow") {
+    // Create a 3x3 matrix:
+    //  1 2 3
+    //  4 5 6
+    //  7 8 9
+    std::vector<std::vector<double>> data = {
+        {1.0, 2.0, 3.0},
+        {4.0, 5.0, 6.0},
+        {7.0, 8.0, 9.0}
+    };
+    Matrix m(data);
+
+    SUBCASE("Extract a valid row") {
+        Matrix row = m.extractRow(1); // Expected row: {4.0, 5.0, 6.0}
+        auto shape = row.shape();
+
+        // Check that the resulting matrix has 1 row and 3 columns.
+        // Replace rows() and cols() with your actual member functions, if different.
+        CHECK(shape.first == 1);
+        CHECK(shape.second == 3);
+
+        // Check values using the overloaded operator() (if available)
+        CHECK(row(0, 0) == 4.0);
+        CHECK(row(0, 1) == 5.0);
+        CHECK(row(0, 2) == 6.0);
+    }
+
+    SUBCASE("Extracting a row with an out-of-range index throws an exception") {
+        // Trying to extract a row that doesn't exist (index 3 for a 3-row matrix) should throw.
+        CHECK_THROWS_AS(m.extractRow(3), std::invalid_argument);
+    }
+}
+
+TEST_CASE("Testing Matrix::extractCol") {
+    // Create a 3x3 matrix:
+    //  1 2 3
+    //  4 5 6
+    //  7 8 9
+    std::vector<std::vector<double>> data = {
+        {1.0, 2.0, 3.0},
+        {4.0, 5.0, 6.0},
+        {7.0, 8.0, 9.0}
+    };
+    Matrix m(data);
+
+    SUBCASE("Extract a valid column") {
+        Matrix col = m.extractCol(1); // Expected column: {2.0, 5.0, 8.0}
+        auto shape = col.shape();
+
+        // Check that the resulting matrix has 3 rows and 1 column.
+        CHECK(shape.first == 3);
+        CHECK(shape.second == 1);
+
+        // Check values.
+        CHECK(col(0, 0) == 2.0);
+        CHECK(col(1, 0) == 5.0);
+        CHECK(col(2, 0) == 8.0);
+    }
+
+    SUBCASE("Extracting a column with an out-of-range index throws an exception") {
+        // Trying to extract a column that doesn't exist (index 3 for a 3-column matrix) should throw.
+        CHECK_THROWS_AS(m.extractCol(3), std::invalid_argument);
+    }
 }
