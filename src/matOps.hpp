@@ -341,7 +341,7 @@ class Matrix {
                 throw std::invalid_argument("Incorrect dims: For matrix m x n and p x r, n must be equal to p.");
             }
 
-            std::vector<std::vector<double>> mulResContainer(this->nrows, std::vector<double>(other.ncols, 0));
+            std::vector<std::vector<double>> mulResContainer(this->nrows, std::vector<double>(other.ncols, 0.0));
 
             const size_t totalElements = this->ncols * this->nrows;
 
@@ -998,5 +998,24 @@ class Matrix {
 inline std::ostream& operator<<(std::ostream& os, const std::pair<size_t, size_t>& shape) {
     os << "(" << shape.first << ", " << shape.second << ")";
 
+    return os;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const std::vector<std::vector<double>>& container) {
+    size_t nrows = container.size();
+    size_t ncols = container[0].size();
+
+    os << "[\n";
+
+    for (size_t i = 0; i < nrows; ++i) {
+        os << "  [";
+        for (size_t j = 0; j < ncols; ++j) {
+            os << container[i][j];
+
+            if (j < ncols - 1) os << ", ";
+        }
+        os << "]" << (i < nrows - 1 ? ",\n" : "\n");
+    }
+    os << "]\n";
     return os;
 }
