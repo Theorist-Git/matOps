@@ -14,14 +14,15 @@ int main() {
 
     // Warm-up multiplication to mitigate any first-run overhead
     Matrix warmup = A * B;
+    warmup = A * B;
 
     std::vector<double> times(iterations);
 
     std::cout << "\nStarting benchmark (" << iterations << " iterations)..." << std::endl;
     for (size_t i = 0; i < iterations; ++i) {
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::steady_clock::now();
         Matrix result = A * B;
-        auto end = std::chrono::high_resolution_clock::now();
+        auto end = std::chrono::steady_clock::now();
 
         // Measure duration in milliseconds
         double duration = std::chrono::duration<double, std::milli>(end - start).count();

@@ -994,6 +994,26 @@ class Matrix {
         }
 
         /**
+         * @brief Computes the trace of an nxn square matrix.
+         *
+         * @return Trace of calling Matrix object.
+         * @throws std::invalid_argument If the matrix is not sqaure.
+         */
+        double trace() const {
+            double tr = 0.0;
+
+            if (this->nrows != this->ncols) {
+                throw std::invalid_argument("Trace is only defined for square matrices.");
+            }
+
+            for (size_t i = 0; i < this->nrows; ++i) {
+                tr += this->container[i][i];
+            }
+
+            return tr;
+        }
+
+        /**
          * @brief Outputs the matrix to an output stream.
          *
          * @param os The output stream.
