@@ -763,3 +763,35 @@ TEST_CASE("Testing Matrix::extractCol") {
         CHECK_THROWS_AS(m.extractCol(3), std::invalid_argument);
     }
 }
+
+TEST_CASE("trace() with vector-of-vector constructor for square matrices") {
+    SUBCASE("1x1 matrix") {
+        std::vector<std::vector<double>> data = { {42.0} };
+        Matrix m(data);
+        CHECK(m.trace() == 42.0);
+    }
+
+    SUBCASE("2x2 matrix") {
+        std::vector<std::vector<double>> data = { {1.0, 2.0},
+                                                    {3.0, 4.0} };
+        Matrix m(data);
+        // Expected trace: 1.0 + 4.0 = 5.0
+        CHECK(m.trace() == 5.0);
+    }
+
+    SUBCASE("3x3 matrix") {
+        std::vector<std::vector<double>> data = { {1.0, 0.0, 0.0},
+                                                    {0.0, 2.0, 0.0},
+                                                    {0.0, 0.0, 3.0} };
+        Matrix m(data);
+        // Expected trace: 1.0 + 2.0 + 3.0 = 6.0
+        CHECK(m.trace() == 6.0);
+    }
+
+    SUBCASE("2x3 matrix") {
+        Matrix m({ {1.0, 2.0, 3.0},
+                   {4.0, 5.0, 6.0}});
+
+        CHECK_THROWS_AS(m.trace(), std::invalid_argument);
+    }
+}
