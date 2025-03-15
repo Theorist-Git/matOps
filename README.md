@@ -1,5 +1,5 @@
 
-![alt text](./assets/svgviewer-output.svg)
+![matOps](./assets/svgviewer-output.svg)
 
 * A lightweight, header only C++ library for matrix operations.
 
@@ -9,9 +9,9 @@
 * The library itself does not require any special building. You can simply copy-paste ```matOps.hpp``` to your project directory and ```#include``` it.
 (Because the truly reusable code is the one that you can simply copy-paste *-Tsoding*).
 
-## Usage
+## Documentation
 
-* __TODO__
+* [Doxygen generated documentaion](./assets/documentation.pdf)
 
 ## Tests
 
