@@ -53,7 +53,7 @@ class Matrix {
               ncols(this->container.empty() ? 0 : this->container[0].size()) {
 
             if (nrows == 0 || ncols == 0) {
-                throw std::invalid_argument("Matrix is empty. Expected non-empty container.");
+                throw std::invalid_argument("Matrix is empty. Expected a non-empty container.");
             }
             // No validation performed. Assumed well formed matrix.
         }
@@ -167,7 +167,13 @@ class Matrix {
          */
         Matrix operator+(const Matrix& other) const {
             if (this->nrows != other.nrows || this->ncols != other.ncols) {
-                throw std::invalid_argument("Matrix dims don't align");
+                throw std::invalid_argument(
+                    "Matrix dimensions do not match: (" + 
+                    std::to_string(this->nrows) + "x" + std::to_string(this->ncols) + 
+                    ") vs (" + 
+                    std::to_string(other.nrows) + "x" + std::to_string(other.ncols) + 
+                    ")"
+                );
             }
 
             Matrix addRes = *this; // addRes = A in A + B
@@ -228,7 +234,13 @@ class Matrix {
          */
         Matrix operator-(const Matrix& other) const {
             if (this->nrows != other.nrows || this->ncols != other.ncols) {
-                throw std::invalid_argument("Matrix dims don't align");
+                throw std::invalid_argument(
+                    "Matrix dimensions do not match: (" + 
+                    std::to_string(this->nrows) + "x" + std::to_string(this->ncols) + 
+                    ") vs (" + 
+                    std::to_string(other.nrows) + "x" + std::to_string(other.ncols) + 
+                    ")"
+                );
             }
 
             Matrix subRes = *this; // subRes = A in A - B
@@ -338,7 +350,11 @@ class Matrix {
          */
         Matrix operator*(const Matrix& other) const {
             if (this->ncols != other.nrows) {
-                throw std::invalid_argument("Incorrect dims: For matrix m x n and p x r, n must be equal to p.");
+                throw std::invalid_argument(
+                    "Incorrect dimensions: For matrices (m x n) and (p x r), n must be equal to p. "
+                    "Given: (" + std::to_string(this->nrows) + "x" + std::to_string(this->ncols) + 
+                    ") and (" + std::to_string(other.nrows) + "x" + std::to_string(other.ncols) + ")."
+                );
             }
 
             std::vector<std::vector<double>> mulResContainer(this->nrows, std::vector<double>(other.ncols, 0.0));
@@ -485,7 +501,10 @@ class Matrix {
          */
         double determinant() const {
             if (this->nrows != this->ncols) {
-                throw std::invalid_argument("Det only for sq. matrices");
+                throw std::invalid_argument(
+                    "Determinant is only defined for square matrices. Given: " + 
+                    std::to_string(nrows) + "x" + std::to_string(ncols)
+                );
             }
             
             size_t n = this->container.size();
@@ -540,7 +559,10 @@ class Matrix {
          */
         Matrix inverse() const {
             if (nrows != ncols) {
-                throw std::invalid_argument("Matrix must be square to invert.");
+                throw std::invalid_argument(
+                    "Matrix must be square to invert. Given: " + 
+                    std::to_string(nrows) + "x" + std::to_string(ncols) + "."
+                );
             }
 
             size_t n = nrows;
