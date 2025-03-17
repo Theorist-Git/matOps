@@ -12,7 +12,8 @@
 /**
  * @class Matrix
  * @brief A simple linear algebra library for matrix operations.
- *
+ * @version 0.6.1
+ * 
  * This class provides basic matrix operations such as addition, subtraction,
  * multiplication, transposition, determinant calculation, inversion, and row/column insertion.
  *
